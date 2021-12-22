@@ -1,4 +1,6 @@
 import math
+from copy import deepcopy
+from random import random, seed
 
 
 def calc_distance(coordA, coordB):
@@ -6,23 +8,22 @@ def calc_distance(coordA, coordB):
 
 
 class Drone:
-    def __init__(self, index, max_load):
+    def __init__(self, index, coords, max_load):
         self.index = index
-        self.coords = [0, 0]
+        self.coords = coords
         self.max_load = max_load
         self.ready = True
 
     def __repr__(self):
-        return f"Drone {self.index} {self.coords}"
+        return f"Drone {self.index}: {self.coords}"
 
 
 class Warehouse:
     def __init__(self, index, coords, products):
         self.index = index
         self.coords = coords
-        self.x = coords[0]
-        self.y = coords[1]
         self.products = products
+        self.score = 0
 
     def calc_heuristic(self, order: 'Order') -> float:
         total_amount = 0
@@ -32,22 +33,21 @@ class Warehouse:
         return heuristic_value
 
     def __repr__(self):
-        return f"Warehouse {self.index} {self.coords}"
+        return f"Warehouse {self.index}: {self.coords} -> {self.score}"
 
 
 class Order:
     def __init__(self, index, coords, amount, products):
         self.index = index
         self.coords = coords
-        self.x = coords[0]
-        self.y = coords[1]
         self.amount = amount
+        self.score = 0
         self.contents = {}
         for product in products:
             self.contents[product] = self.contents.setdefault(product, 0) + 1
 
     def __repr__(self):
-        return f"Order {self.index} {self.coords}"
+        return f"Order {self.index}: {self.coords} -> {self.score}"
 
 
 class GeneticAlgorythm:
@@ -74,35 +74,34 @@ class GeneticAlgorythm:
         deadline = int(params[3])
         max_load = int(params[4])
 
-        drones = []
-        for i in range(0, no_drones):
-            drones.append(Drone(i, max_load))
-        assert len(drones) == no_drones
-
         no_types = int(lines[1].strip())
         types = [int(product_type) for product_type in lines[2].strip().split(" ")]
         assert len(types) == no_types
 
         no_warehouses = int(lines[3].strip())
         warehouses = []
-        index = 0
-        for line_idx in range(4, 4 + no_warehouses * 2, 2):
+        line_idx = 4
+        for index in range(no_warehouses):
             coords = [int(coord) for coord in lines[line_idx].strip().split(" ")]
             products = [int(product_type) for product_type in lines[line_idx + 1].strip().split(" ")]
             warehouses.append(Warehouse(index, coords, products))
-            index += 1
+            line_idx += 2
         assert len(warehouses) == no_warehouses
-        line_idx += 2
+
+        drones = []
+        for i in range(0, no_drones):
+            drones.append(Drone(i, warehouses[0].coords, max_load))
+        assert len(drones) == no_drones
 
         no_orders = int(lines[line_idx].strip())
         orders = []
-        index = 0
-        for line_idx in range(line_idx + 1, line_idx + 1 + no_orders * 3, 3):
+        line_idx += 1
+        for index in range(no_orders):
             coords = [int(coord) for coord in lines[line_idx].strip().split(" ")]
             amount = int(lines[line_idx + 1].strip())
             products = [int(product_type) for product_type in lines[line_idx + 2].strip().split(" ")]
             orders.append(Order(index, coords, amount, products))
-            index += 1
+            line_idx += 3
         assert len(orders) == no_orders
 
         return SimulationParameters(columns, rows, deadline, drones, types, warehouses, orders)
@@ -121,7 +120,7 @@ class GeneticAlgorythm:
     @staticmethod
     def mutate(population):
         # TODO: mutation
-        return population.copy()
+        return population
 
     @staticmethod
     def join(last_population, current_population):
@@ -141,47 +140,66 @@ class SimulationParameters:
 
 class Simulation:
     def __init__(self, parameters: SimulationParameters):
-        self.parameters = parameters
-        self.turn = 0
+        self.parameters = deepcopy(parameters)
+        self.wzl = random()
+        self.wzr = random()
+        self.wzp = random()
+        self.wzo = random()
+
+        self.wmz = random()
+        self.wmd = random()
 
         self.result = None
 
-        first_warehouse = self.parameters.warehouses[0]
-        for i in range(len(self.parameters.drones)):
-            self.parameters.drones.append(Drone(i, first_warehouse.coords))
+    def run(self, log=True):
+        if log:
+            self.draw_map()
 
-        # self.make_turn()
-
-    def make_turn(self):
-        pass
-        # print(f"Turn {self.turn}")
-        # order = self.orders.pop(0)
+        for turn in range(self.parameters.deadline):
+            print(f"Turn {turn}")
+            drone = self.parameters.drones[0]
+            order = self.evaluate_orders()
+            warehouse = self.evaluate_warehouses(drone, order)
         # warehouse = min(self.warehouses, key=lambda w: w.calc_heuristic(order))
         # drone = min(self.drones, key=lambda d: calc_distance(d.coords, warehouse.coords))
         # print(
         #     f"Order {order.index}: Drone {drone.index} {drone.coords} will fly to Warehouse {warehouse.index} {warehouse.coords}")
 
-    def draw_map(self):
-        pass
-        # for row in range(self.rows):
-        #     for column in range(self.columns):
-        #         no_object = True
-        #         for coords, products in self.warehouses:
-        #             if [row, column] == coords:
-        #                 print("W", end="")
-        #                 no_object = False
-        #         for coords, amount, types in self.orders:
-        #             if [row, column] == coords:
-        #                 print("O", end="")
-        #                 no_object = False
-        #         if no_object:
-        #             print("-", end="")
-        #     print()
-        # print()
+    def evaluate_orders(self):
+        for order in self.parameters.orders:
+            order.score = self.wzl * order.amount +\
+                          self.wzr * len(order.contents.keys())
+            # TODO: Add more parameters
+        self.parameters.orders.sort(reverse=True, key=lambda o: o.score)
+        return self.parameters.orders.pop(0)
 
-    def find_best_warehouse(self, coords, product_type):
-        pass
+    def evaluate_warehouses(self, drone: Drone, order: Order):
+        for warehouse in self.parameters.warehouses:
+            warehouse.score = self.wmz * calc_distance(order.coords, warehouse.coords) +\
+                              self.wmd * calc_distance(drone.coords, warehouse.coords)
+            # TODO: Add more parameters
+        self.parameters.warehouses.sort(reverse=True, key=lambda w: w.score)
+        return self.parameters.warehouses.pop(0)
+
+    def draw_map(self):
+        for row in range(self.parameters.rows):
+            for column in range(self.parameters.columns):
+                no_object = True
+                for warehouse in self.parameters.warehouses:
+                    if [row, column] == warehouse.coords:
+                        print("W", end="")
+                        no_object = False
+                for order in self.parameters.orders:
+                    if [row, column] == order.coords:
+                        print("O", end="")
+                        no_object = False
+                if no_object:
+                    print("-", end="")
+            print()
+        print()
 
 
 if __name__ == '__main__':
-    algorythm = GeneticAlgorythm('busy_day.in', 1, 10)
+    seed(2137)
+    algorythm = GeneticAlgorythm('resources/busy_day_mini.in', 1, 1)
+    pass
