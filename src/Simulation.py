@@ -6,6 +6,7 @@ from typing import Dict
 
 from src.objects import Drone, Order
 from src import SimulationParameters
+from utils import calc_distance
 
 
 class Simulation:
@@ -15,15 +16,36 @@ class Simulation:
 
         self.score = 0
 
-    def run(self, log=True):
+    def run(self, log=False):
         if log:
             self.draw_map()
 
-        for turn in range(self.parameters.max_payload):
+        for turn in range(self.parameters.max_turns):
             print(f"Turn {turn}")
-            drone = self.parameters.drones[0]
-            order = self.evaluate_orders()
-            warehouse = self.evaluate_warehouses(drone, order)
+            for drone in self.parameters.drones:
+                if drone.is_ready():
+                    if not drone.order:
+                        order = self.evaluate_orders()
+                        drone.set_order(order)
+
+                    if not drone.has_all_items():
+                        if drone.target is None:
+                            warehouse = self.evaluate_warehouses(drone, drone.order)
+                            # warehouse.reserve_goods(drone.order)
+                            drone.set_target(warehouse)
+                            drone.fly_to(warehouse.coordinates)
+                        else:
+                            drone.load()
+                            drone.set_target(None)
+                    else:
+                        if drone.target is None:
+                            drone.set_target(drone.order)
+                            drone.fly_to(drone.order.coordinates)
+                        else:
+                            drone.unload()
+
+                drone.update_time()
+            # drone.set_order(order)
         # warehouse = min(self.warehouses, key=lambda w: w.calc_heuristic(order))
         # drone = min(self.drones, key=lambda d: calc_distance(d.coordinates, warehouse.coordinates))
         # print( f"Order {order.index}: Drone {drone.index} {drone.coordinates}
@@ -42,18 +64,14 @@ class Simulation:
 
     def evaluate_warehouses(self, drone: Drone, order: Order):
         for warehouse in self.parameters.warehouses:
-            warehouse.score = self.weights["wmz"] * self.calc_distance(order.coordinates, warehouse.coordinates) + \
-                              self.weights["wmd"] * self.calc_distance(drone.coordinates, warehouse.coordinates)
+            warehouse.score = self.weights["wmz"] * calc_distance(order.coordinates, warehouse.coordinates) + \
+                              self.weights["wmd"] * calc_distance(drone.coordinates, warehouse.coordinates)
             # TODO: Add more parameters
         self.parameters.warehouses.sort(reverse=True, key=lambda w: w.score)
         if self.parameters.warehouses:
-            return self.parameters.warehouses.pop(0)
+            return self.parameters.warehouses[0]
         else:
             return None
-
-    @staticmethod
-    def calc_distance(coordA, coordB):
-        return math.sqrt((coordA[0] - coordB[0]) ** 2 + (coordA[1] - coordB[1]) ** 2)
 
     def draw_map(self):
         for row in range(self.parameters.rows):

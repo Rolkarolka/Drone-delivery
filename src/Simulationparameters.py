@@ -2,10 +2,11 @@ from src.objects import Drone, Warehouse, Order
 
 
 class SimulationParameters:
-    def __init__(self, columns=None, rows=None, max_payload=None, drones=None, types=None, warehouses=None,
+    def __init__(self, columns=None, rows=None, max_turns=None, max_payload=None, drones=None, types=None, warehouses=None,
                  orders=None):
         self.columns = columns
         self.rows = rows
+        self.max_turns = max_turns
         self.max_payload = max_payload
         self.drones = drones
         self.types = types
@@ -16,7 +17,7 @@ class SimulationParameters:
         with open(filename) as file:
             lines = file.readlines()
         basic_info_lines_amount = 3
-        self.rows, self.columns, no_drones, no_turns, self.max_payload = map(int, lines[0].strip().split(" "))
+        self.rows, self.columns, no_drones, self.max_turns, self.max_payload = map(int, lines[0].strip().split(" "))
         no_product_type = int(lines[1].strip())
         self.types = [int(product_type) for product_type in lines[2].strip().split(" ")]
         assert len(self.types) == no_product_type
@@ -52,6 +53,7 @@ class SimulationParameters:
             order_coordinates = [int(coord) for coord in lines[line_idx].strip().split(" ")]
             amount = int(lines[line_idx + 1].strip())
             stock_level = [int(product_type) for product_type in lines[line_idx + 2].strip().split(" ")]
-            orders.append(Order(index, order_coordinates, amount, stock_level))
+            order = Order(index, order_coordinates, amount, stock_level)
+            orders.append(order)
         assert len(orders) == no_orders
         return orders
