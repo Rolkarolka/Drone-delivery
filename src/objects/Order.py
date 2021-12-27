@@ -1,7 +1,7 @@
 class Order:
-    def __init__(self, index, coords, amount, products):
+    def __init__(self, index, coordinates, amount, products):
         self.index = index
-        self.coords = coords
+        self.coordinates = coordinates
         self.amount = amount
         self.score = 0
         self.contents = {}
@@ -9,4 +9,4 @@ class Order:
             self.contents[product] = self.contents.setdefault(product, 0) + 1
 
     def __repr__(self):
-        return f"Order {self.index}: {self.coords} -> {self.score}"
+        return f"Order {self.index}: {self.coordinates} -> {self.score}"

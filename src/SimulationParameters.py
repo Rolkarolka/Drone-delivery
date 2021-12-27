@@ -21,11 +21,11 @@ class SimulationParameters:
         self.types = [int(product_type) for product_type in lines[2].strip().split(" ")]
         assert len(self.types) == no_product_type
 
-        self.warehouses = self.create_warehouse_list(lines[basic_info_lines_amount:])
-        self.drones = self.create_drone_list(no_drones, self.warehouses[0], self.max_payload)
-        self.orders = self.create_order_list(lines[basic_info_lines_amount + 2 * len(self.warehouses) + 1:])
+        self.warehouses = self.__create_warehouse_list(lines[basic_info_lines_amount:])
+        self.drones = self.__create_drone_list(no_drones, self.warehouses[0], self.max_payload)
+        self.orders = self.__create_order_list(lines[basic_info_lines_amount + 2 * len(self.warehouses) + 1:])
 
-    def create_warehouse_list(self, lines: [str]) -> [Warehouse]:
+    def __create_warehouse_list(self, lines: [str]) -> [Warehouse]:
         no_warehouses = int(lines[0].strip())
         warehouses = []
         for index, line_idx in zip(range(no_warehouses), range(1, 1 + no_warehouses * 2, 2)):
@@ -35,14 +35,14 @@ class SimulationParameters:
         assert len(warehouses) == no_warehouses
         return warehouses
 
-    def create_drone_list(self, no_drones: int, home_warehouse: Warehouse, max_payload: int) -> [Drone]:
+    def __create_drone_list(self, no_drones: int, home_warehouse: Warehouse, max_payload: int) -> [Drone]:
         drones = []
         for i in range(0, no_drones):
-            drones.append(Drone(i, home_warehouse.coords, max_payload))
+            drones.append(Drone(i, home_warehouse.coordinates, max_payload))
         assert len(drones) == no_drones
         return drones
 
-    def create_order_list(self, lines) -> [Order]:
+    def __create_order_list(self, lines) -> [Order]:
         no_orders = int(lines[0].strip())
         orders = []
         for index, line_idx in zip(range(no_orders), range(1, 1 + no_orders * 3, 3)):

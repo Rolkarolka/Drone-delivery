@@ -1,4 +1,4 @@
-from src.Simulation import SimulationParameters, Simulation
+from src import SimulationParameters, Simulation
 
 
 class GeneticAlgorythm:

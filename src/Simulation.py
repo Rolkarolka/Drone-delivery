@@ -2,7 +2,7 @@ from random import random
 from copy import deepcopy
 import math
 from src.objects import Drone, Order
-from src.Simulationparameters import SimulationParameters
+from src.SimulationParameters import SimulationParameters
 
 
 class Simulation:
@@ -28,9 +28,9 @@ class Simulation:
             order = self.evaluate_orders()
             warehouse = self.evaluate_warehouses(drone, order)
         # warehouse = min(self.warehouses, key=lambda w: w.calc_heuristic(order))
-        # drone = min(self.drones, key=lambda d: calc_distance(d.coords, warehouse.coords))
-        # print( f"Order {order.index}: Drone {drone.index} {drone.coords}
-        # will fly to Warehouse {warehouse.index} {warehouse.coords}")
+        # drone = min(self.drones, key=lambda d: calc_distance(d.coordinates, warehouse.coordinates))
+        # print( f"Order {order.index}: Drone {drone.index} {drone.coordinates}
+        # will fly to Warehouse {warehouse.index} {warehouse.coordinates}")
 
     def evaluate_orders(self):
         for order in self.parameters.orders:
@@ -45,8 +45,8 @@ class Simulation:
 
     def evaluate_warehouses(self, drone: Drone, order: Order):
         for warehouse in self.parameters.warehouses:
-            warehouse.score = self.wmz * self.calc_distance(order.coords, warehouse.coords) + \
-                              self.wmd * self.calc_distance(drone.coords, warehouse.coords)
+            warehouse.score = self.wmz * self.calc_distance(order.coordinates, warehouse.coordinates) + \
+                              self.wmd * self.calc_distance(drone.coordinates, warehouse.coordinates)
             # TODO: Add more parameters
         self.parameters.warehouses.sort(reverse=True, key=lambda w: w.score)
         if self.parameters.warehouses:
@@ -63,11 +63,11 @@ class Simulation:
             for column in range(self.parameters.columns):
                 no_object = True
                 for warehouse in self.parameters.warehouses:
-                    if [row, column] == warehouse.coords:
+                    if [row, column] == warehouse.coordinates:
                         print("W", end="")
                         no_object = False
                 for order in self.parameters.orders:
-                    if [row, column] == order.coords:
+                    if [row, column] == order.coordinates:
                         print("O", end="")
                         no_object = False
                 if no_object:
