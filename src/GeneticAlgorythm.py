@@ -3,11 +3,11 @@ import numpy as np
 
 
 class GeneticAlgorythm:
-    def __init__(self, filename, population_size, max_generations):
+    def __init__(self, filename, population_size, max_generations, elite_size = 5):
         self.sim_consts = self.get_simulation_from_filename(filename)
         self.max_generations = max_generations
         self.population_size = population_size
-
+        self.elite_size = elite_size
         self.algorithm()
 
     @staticmethod
@@ -54,15 +54,15 @@ class GeneticAlgorythm:
     @staticmethod
     def evaluate(population):
         for simulation in population:
-            # TODO: evaluation
             simulation.run()
-        return population  # return grade of
+        rated = sorted(population, key=lambda single_simulation: single_simulation.score)
+        rated.reverse()
+        return rated
 
     @staticmethod
     def mutation(population):
         # TODO: mutation
         return population
 
-    @staticmethod
-    def elite_succession(last_population, current_population):
-        return last_population[:3] + current_population
+    def elite_succession(self, last_population, current_population):
+        return last_population[0:self.elite_size] + current_population[0:-self.elite_size]
