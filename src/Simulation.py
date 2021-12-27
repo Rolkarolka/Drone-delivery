@@ -1,19 +1,8 @@
 from random import random
 from copy import deepcopy
-from src.Drone import Drone
-from src.Order import Order
 import math
-
-
-class SimulationParameters:
-    def __init__(self, columns, rows, deadline, drones, types, warehouses, orders):
-        self.columns = columns
-        self.rows = rows
-        self.deadline = deadline
-        self.drones = drones
-        self.types = types
-        self.warehouses = warehouses
-        self.orders = orders
+from src.objects import Drone, Order
+from src.Simulationparameters import SimulationParameters
 
 
 class Simulation:
@@ -33,7 +22,7 @@ class Simulation:
         if log:
             self.draw_map()
 
-        for turn in range(self.parameters.deadline):
+        for turn in range(self.parameters.max_payload):
             print(f"Turn {turn}")
             drone = self.parameters.drones[0]
             order = self.evaluate_orders()
