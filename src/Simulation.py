@@ -13,7 +13,7 @@ class Simulation:
         self.parameters = deepcopy(parameters)
         self.weights = weights
 
-        self.score = None
+        self.score = 0
 
     def run(self, log=True):
         if log:
