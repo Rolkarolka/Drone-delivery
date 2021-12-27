@@ -1,20 +1,17 @@
 from random import random
 from copy import deepcopy
 import math
+
+from typing import Dict
+
 from src.objects import Drone, Order
 from src import SimulationParameters
 
 
 class Simulation:
-    def __init__(self, parameters: SimulationParameters):
+    def __init__(self, parameters: SimulationParameters, weights: Dict[str, int]):
         self.parameters = deepcopy(parameters)
-        self.wzl = random()
-        self.wzr = random()
-        self.wzp = random()
-        self.wzo = random()
-
-        self.wmz = random()
-        self.wmd = random()
+        self.weights = weights
 
         self.result = None
 
@@ -34,8 +31,8 @@ class Simulation:
 
     def evaluate_orders(self):
         for order in self.parameters.orders:
-            order.score = self.wzl * order.amount + \
-                          self.wzr * len(order.contents.keys())
+            order.score = self.weights["wzl"] * order.amount + \
+                          self.weights["wzr"] * len(order.contents.keys())
             # TODO: Add more parameters
         self.parameters.orders.sort(reverse=True, key=lambda o: o.score)
         if self.parameters.orders:
@@ -45,8 +42,8 @@ class Simulation:
 
     def evaluate_warehouses(self, drone: Drone, order: Order):
         for warehouse in self.parameters.warehouses:
-            warehouse.score = self.wmz * self.calc_distance(order.coordinates, warehouse.coordinates) + \
-                              self.wmd * self.calc_distance(drone.coordinates, warehouse.coordinates)
+            warehouse.score = self.weights["wmz"] * self.calc_distance(order.coordinates, warehouse.coordinates) + \
+                              self.weights["wmd"] * self.calc_distance(drone.coordinates, warehouse.coordinates)
             # TODO: Add more parameters
         self.parameters.warehouses.sort(reverse=True, key=lambda w: w.score)
         if self.parameters.warehouses:
