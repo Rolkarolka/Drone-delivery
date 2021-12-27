@@ -2,7 +2,7 @@ from random import random
 from copy import deepcopy
 import math
 from src.objects import Drone, Order
-from src.SimulationParameters import SimulationParameters
+from src import SimulationParameters
 
 
 class Simulation:

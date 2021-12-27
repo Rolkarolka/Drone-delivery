@@ -1,2 +1,2 @@
-from src.Simulation import *
-from src.SimulationParameters import *
+from src.Simulationparameters import SimulationParameters
+from src.Simulation import Simulation
