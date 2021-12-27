@@ -13,7 +13,8 @@ class GeneticAlgorythm:
             mutated_population = self.mutate(self.population)
             self.population = self.join(self.population, mutated_population)
 
-    def get_simulation_from_filename(self, filename):
+    @staticmethod
+    def get_simulation_from_filename(filename):
         simulation_parameters = SimulationParameters()
         simulation_parameters.load_file(filename)
         return simulation_parameters

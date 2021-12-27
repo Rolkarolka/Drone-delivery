@@ -1,4 +1,5 @@
 import math
+from src.objects import Order
 
 
 class Warehouse:
@@ -8,7 +9,7 @@ class Warehouse:
         self.products = products
         self.score = 0
 
-    def calc_heuristic(self, order: 'Order') -> float:
+    def calc_heuristic(self, order: Order) -> float:
         total_amount = 0
         for product_type, amount in order.contents.items():
             total_amount += max(amount, self.products[product_type])
