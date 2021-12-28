@@ -1,7 +1,6 @@
 from copy import deepcopy
 
-from Simulation import Simulation
-from Simulationparameters import SimulationParameters
+from algorythm import Simulation, SimulationParameters
 import numpy as np
 import random
 

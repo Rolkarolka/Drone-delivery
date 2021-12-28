@@ -1,5 +1,5 @@
 import numpy as np
-from GeneticAlgorythm import GeneticAlgorythm
+from algorythm import GeneticAlgorythm
 from random import seed
 
 if __name__ == '__main__':

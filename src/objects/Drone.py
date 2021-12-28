@@ -1,7 +1,7 @@
 import math
 
 from objects import Order, Warehouse
-from utils import calc_distance
+from utilities import Utilities
 
 
 class Drone:
@@ -54,7 +54,7 @@ class Drone:
             self.status = "READY_TO_DELIVER"
 
     def fly_to(self, target):
-        self.time_to_ready += math.ceil(calc_distance(self.coordinates, target.coordinates))
+        self.time_to_ready += math.ceil(Utilities.calc_distance(self.coordinates, target.coordinates))
         print(f"{self} will be flying to {target}, time: {self.time_to_ready}")
         self.coordinates = target.coordinates
 

@@ -1,13 +1,10 @@
-from random import random
-from copy import deepcopy
 import math
-
+from copy import deepcopy
 from typing import Dict
 
 from objects import Drone, Order
-from GeneticAlgorythm import *
-from Simulationparameters import SimulationParameters
-from utils import calc_distance
+from algorythm import SimulationParameters
+from utilities import Utilities
 
 
 class Simulation:
@@ -64,8 +61,8 @@ class Simulation:
                     items_to_pick += min(order.items[item_type].get_remains(), warehouse.items[item_type].current)
 
             if items_to_pick != 0:
-                warehouse.score = self.weights["wmz"] * calc_distance(order.coordinates, warehouse.coordinates) + \
-                                  self.weights["wmd"] * calc_distance(drone.coordinates, warehouse.coordinates) + \
+                warehouse.score = self.weights["wmz"] * Utilities.calc_distance(order.coordinates, warehouse.coordinates) + \
+                                  self.weights["wmd"] * Utilities.calc_distance(drone.coordinates, warehouse.coordinates) + \
                                   self.weights["wml"] * items_to_pick
             else:
                 # There is nothing important in it
