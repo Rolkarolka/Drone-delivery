@@ -11,21 +11,27 @@ class Simulation:
     def __init__(self, parameters: SimulationParameters, weights: Dict[str, int]):
         self.parameters = deepcopy(parameters)
         self.weights = weights
+        self.current_orders = deepcopy(self.parameters.orders)
+        self.current_drones = deepcopy(self.parameters.drones)
         self.score = 0
 
-    def run(self, log=False):
-        if log:
-            self.draw_map()
-
+    def reset(self):
         self.score = 0
+        self.current_orders = deepcopy(self.parameters.orders)
+        self.current_drones = deepcopy(self.parameters.drones)
+        for warehouse in self.parameters.warehouses:
+            warehouse.items.fill()
+
+    def run(self):
+        self.reset()
         for turn in range(self.parameters.max_turns):
             if turn % 100 == 0:
                 print(f"Turn {turn}")
-            for drone in self.parameters.drones:
+            for drone in self.current_drones:
                 if drone.is_ready():
-                    if drone.status == "NO_ORDER" and len(self.parameters.orders) > 0:
+                    if drone.status == "NO_ORDER" and len(self.current_orders) > 0:
                         self.evaluate_orders()
-                        drone.set_order(self.parameters.orders.pop(0))
+                        drone.set_order(self.current_orders.pop(0))
 
                     if drone.status == "NO_TARGET":
                         if not drone.has_all_items():
@@ -47,11 +53,11 @@ class Simulation:
         print(f"Total simulation score = {self.score}")
 
     def evaluate_orders(self):
-        for order in self.parameters.orders:
+        for order in self.current_orders:
             order.score = self.weights["wzl"] * order.amount + \
                           self.weights["wzr"] * len(order.items.keys())
             # TODO: Add more parameters
-        self.parameters.orders.sort(reverse=True, key=lambda o: o.score)
+        self.current_orders.sort(reverse=True, key=lambda o: o.score)
 
     def evaluate_warehouses(self, drone: Drone, order: Order):
         for warehouse in self.parameters.warehouses:
@@ -78,7 +84,7 @@ class Simulation:
                     if [row, column] == warehouse.coordinates:
                         print("W", end="")
                         no_object = False
-                for order in self.parameters.orders:
+                for order in self.current_orders:
                     if [row, column] == order.coordinates:
                         print("O", end="")
                         no_object = False
