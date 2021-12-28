@@ -1,6 +1,6 @@
 import math
 
-from src.objects import Order
+from objects import Order, Warehouse
 from utils import calc_distance
 
 
@@ -10,44 +10,75 @@ class Drone:
         self.coordinates = coordinates
         self.max_load = max_load
         self.time_to_ready = 0
-        self.items = {}
+
+        self.status = "NO_ORDER"
         self.order = None
-        self.target = None
+        self.warehouse = None
 
     def update_time(self):
-        self.time_to_ready -= 1
+        if self.time_to_ready > 0:
+            self.time_to_ready -= 1
+        else:
+            if self.status == "FLYING_TO_LOAD":
+                self.status = "READY_TO_LOAD"
+            if self.status == "FLYING_TO_DELIVER":
+                self.status = "READY_TO_DELIVER"
+            if self.status == "LOADING":
+                self.status = "NO_TARGET"
+            if self.status == "DELIVERING":
+                self.status = "READY_TO_SCORE"
 
     def is_ready(self):
         return self.time_to_ready == 0
 
+    def has_all_items(self) -> bool:
+        return self.order.items.has_all()
+
     def set_order(self, order: Order):
         self.order = order
+        self.status = "NO_TARGET"
         print(f"{self} will be delivering {order}")
 
-    def has_all_items(self) -> bool:
-        for item_types in self.order.contents.keys():
-            if self.order.contents[item_types] > self.items.get(item_types, 0):
-                return False
-        return True
+    def fly_to_warehouse(self):
+        if self.coordinates != self.warehouse.coordinates:
+            self.fly_to(self.warehouse)
+            self.status = "FLYING_TO_LOAD"
+        else:
+            self.status = "READY_TO_LOAD"
 
-    def set_target(self, target):
-        self.target = target
+    def fly_to_order(self):
+        if self.coordinates != self.order.coordinates:
+            self.fly_to(self.order)
+            self.status = "FLYING_TO_DELIVER"
+        else:
+            self.status = "READY_TO_DELIVER"
 
-    def fly_to(self, coordinates):
-        if self.coordinates != coordinates:
-            self.time_to_ready = math.ceil(calc_distance(self.coordinates, coordinates))
-            print(f"{self} will be flying to {coordinates}. ETA: {self.time_to_ready}")
-            self.coordinates = coordinates
+    def fly_to(self, target):
+        self.time_to_ready += math.ceil(calc_distance(self.coordinates, target.coordinates))
+        print(f"{self} will be flying to {target}, time: {self.time_to_ready}")
+        self.coordinates = target.coordinates
+
+    def reserve_goods(self, warehouse: Warehouse):
+        self.warehouse = warehouse
+        self.order.items.reserve(warehouse.items)
 
     def load(self):
-        # TODO: Loading
-        self.items = self.order.contents
-        self.time_to_ready += 1
-        print(f"{self} is loading items from {self.target}")
+        print(f"{self} is loading items from {self.warehouse}")
+        self.time_to_ready += self.order.items.move_from_reserve()
+        self.warehouse = None
+        self.status = "LOADING"
 
-    def unload(self):
-        # TODO: Unloading
-        print(f"{self} is unloading items to {self.target}")
+    def deliver(self):
+        self.time_to_ready += 1
+        print(f"{self} is delivering items to {self.order}")
+        self.status = "DELIVERING"
+
+    def calc_score(self, max_turns, turn) -> int:
+        score = math.ceil((max_turns - (turn + 1.0)) / max_turns * 100.0)
+        print(f"{self} finished {self.order}, score = {score}")
+        self.status = "NO_ORDER"
+        self.order = None
+        return score
 
     def __repr__(self):
         return f"Drone {self.index}: {self.coordinates}"

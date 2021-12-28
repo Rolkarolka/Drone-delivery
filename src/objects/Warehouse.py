@@ -1,9 +1,13 @@
+from objects import ItemList
+
+
 class Warehouse:
-    def __init__(self, index, coordinates, products):
+    def __init__(self, index: int, coordinates, products: list):
         self.index = index
         self.coordinates = coordinates
-        self.products = products
         self.score = 0
+        self.items = ItemList(item_list=products)
+        self.items.fill()
 
     def __str__(self):
         return f"Warehouse {self.index}: {self.coordinates}"

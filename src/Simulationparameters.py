@@ -1,4 +1,4 @@
-from src.objects import Drone, Warehouse, Order
+from objects import *
 
 
 class SimulationParameters:
