@@ -2,6 +2,7 @@ import math
 
 from objects import Order, Warehouse
 from utilities import Utilities
+import logging
 
 
 class Drone:
@@ -37,7 +38,7 @@ class Drone:
     def set_order(self, order: Order):
         self.order = order
         self.status = "NO_TARGET"
-        print(f"{self} will be delivering {order}")
+        logging.info(f"{self} will be delivering {order}")
 
     def fly_to_warehouse(self):
         if self.coordinates != self.warehouse.coordinates:
@@ -55,7 +56,7 @@ class Drone:
 
     def fly_to(self, target):
         self.time_to_ready += math.ceil(Utilities.calc_distance(self.coordinates, target.coordinates))
-        print(f"{self} will be flying to {target}, time: {self.time_to_ready}")
+        logging.info(f"{self} will be flying to {target}, time: {self.time_to_ready}")
         self.coordinates = target.coordinates
 
     def reserve_goods(self, warehouse: Warehouse):
@@ -63,19 +64,19 @@ class Drone:
         self.order.items.reserve(warehouse.items)
 
     def load(self):
-        print(f"{self} is loading items from {self.warehouse}")
+        logging.info(f"{self} is loading items from {self.warehouse}")
         self.time_to_ready += self.order.items.move_from_reserve()
         self.warehouse = None
         self.status = "LOADING"
 
     def deliver(self):
         self.time_to_ready += 1
-        print(f"{self} is delivering items to {self.order}")
+        logging.info(f"{self} is delivering items to {self.order}")
         self.status = "DELIVERING"
 
     def calc_score(self, max_turns, turn) -> int:
         score = math.ceil((max_turns - (turn + 1.0)) / max_turns * 100.0)
-        print(f"{self} finished {self.order}, score = {score}")
+        logging.info(f"{self} finished {self.order}, score = {score}")
         self.status = "NO_ORDER"
         self.order = None
         return score

@@ -2,7 +2,8 @@ from objects import *
 
 
 class SimulationParameters:
-    def __init__(self, columns=None, rows=None, max_turns=None, max_payload=None, drones=None, types=None, warehouses=None,
+    def __init__(self, columns=None, rows=None, max_turns=None, max_payload=None, drones=None, types=None,
+                 warehouses=None,
                  orders=None):
         self.columns = columns
         self.rows = rows

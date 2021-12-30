@@ -3,7 +3,7 @@ from copy import deepcopy
 from algorythm import Simulation, SimulationParameters
 import numpy as np
 import random
-
+import logging
 
 class GeneticAlgorythm:
     def __init__(self, filename, population_size, max_generations, elite_size=5, tournament_size=2):
@@ -25,11 +25,15 @@ class GeneticAlgorythm:
         population = self.initialize_population()
         rating = self.evaluation(population)
         while t < self.max_generations:
+            logging.debug(f"Max score in current generation {t}: {max([simulation.score for simulation in population])}")
             t_population = self.tournament_selection(population)
             m_population = self.mutation(t_population)
             population = self.elite_succession(rating, m_population)
+            population = self.reset_simulations(population)
             rating = self.evaluation(population)
             t += 1
+        best_simulation = max(population, key=lambda simulation: simulation.score)
+        logging.debug(f"______ OUTPUT _____ \nMax score in last generation {t}: {best_simulation.score} \nWeights values: {best_simulation.weights}\n_____________________________")
 
     def initialize_population(self):
         population = []
@@ -85,3 +89,6 @@ class GeneticAlgorythm:
 
     def elite_succession(self, last_population, current_population):
         return last_population[0:self.elite_size] + current_population[0:-self.elite_size]
+
+    def reset_simulations(self, population):
+        return [Simulation(self.sim_consts, simulation.weights) for simulation in population]
