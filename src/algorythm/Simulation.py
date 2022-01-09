@@ -3,7 +3,7 @@ from copy import deepcopy
 from typing import Dict
 
 from algorythm.SimulationWeights import SimulationWeights
-from objects import Drone, Order
+from objects import Drone, Order, DroneStatus
 from algorythm import SimulationParameters
 from utilities import Utilities
 import logging
@@ -20,17 +20,22 @@ class Simulation:
             self.weights = SimulationWeights.initialize_weights()
         self.score = 0
 
-    def run(self, turn_filter: int = 1):
+    def are_drones_working(self) -> bool:
+        status = False
+        for drone in self.parameters.drones:
+            if drone.status != DroneStatus.NO_ORDER:
+                status = True
+        return status
+
+    def run(self):
         for turn in range(self.parameters.max_turns):
-            if turn % turn_filter == 0:
-                logging.info(f"Turn {turn}")
             for drone in self.parameters.drones:
                 if drone.is_ready():
-                    if drone.status == "NO_ORDER" and len(self.parameters.orders) > 0:
-                        self.evaluate_orders()
+                    if drone.status == DroneStatus.NO_ORDER and len(self.parameters.orders) > 0:
+                        self.evaluate_orders(drone)
                         drone.set_order(self.parameters.orders.pop(0))
 
-                    if drone.status == "NO_TARGET":
+                    if drone.status == DroneStatus.NO_TARGET:
                         if not drone.has_all_items():
                             if drone.get_remaining_load() > 0:
                                 self.evaluate_warehouses(drone, drone.order)
@@ -39,16 +44,18 @@ class Simulation:
                                 drone.fly_to_order()
                         else:
                             drone.fly_to_order()
-
-                if drone.is_ready() and drone.status == "READY_TO_SCORE":
+                if drone.is_ready() and drone.status == DroneStatus.READY_TO_SCORE:
                     self.score += drone.calc_score(self.parameters.max_turns, turn)
                 drone.update_time()
+            if len(self.parameters.orders) == 0 and not self.are_drones_working():
+                break
         logging.info(f"Total simulation score = {self.score}")
 
-    def evaluate_orders(self):
+    def evaluate_orders(self, drone: Drone):
         for order in self.parameters.orders:
             order.score = self.weights["wzl"] * order.amount + \
-                          self.weights["wzr"] * len(order._items.keys())
+                          self.weights["wzr"] * len(order._items.keys()) + \
+                          self.weights["wzo"] * Utilities.calc_distance(drone.coordinates, order.coordinates)
             # TODO: Add more parameters
         self.parameters.orders.sort(reverse=True, key=lambda o: o.score)
 
@@ -68,20 +75,3 @@ class Simulation:
                 warehouse.score = -math.inf
 
         self.parameters.warehouses.sort(reverse=True, key=lambda w: w.score)
-
-    # def draw_map(self):
-    #     for row in range(self.parameters.rows):
-    #         for column in range(self.parameters.columns):
-    #             no_object = True
-    #             for warehouse in self.parameters.warehouses:
-    #                 if [row, column] == warehouse.coordinates:
-    #                     logging.info("W", end="")
-    #                     no_object = False
-    #             for order in self.parameters.orders:
-    #                 if [row, column] == order.coordinates:
-    #                     logging.info("O", end="")
-    #                     no_object = False
-    #             if no_object:
-    #                 logging.info("-", end="")
-    #         logging.info()
-    #     logging.info()
