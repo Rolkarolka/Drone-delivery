@@ -5,20 +5,17 @@ import numpy as np
 import random
 import logging
 
+from algorythm.SimulationWeights import SimulationWeights
+
+
 class GeneticAlgorythm:
     def __init__(self, filename, population_size, max_generations, elite_size=5, tournament_size=2):
-        self.sim_consts = self.get_simulation_from_filename(filename)
+        self.sim_consts = SimulationParameters.from_file(filename)
         self.max_generations = max_generations
         self.population_size = population_size
         self.elite_size = elite_size
         self.tournament_size = tournament_size
         self.algorithm()
-
-    @staticmethod
-    def get_simulation_from_filename(filename):
-        simulation_parameters = SimulationParameters()
-        simulation_parameters.load_file(filename)
-        return simulation_parameters
 
     def algorithm(self):
         t = 0
@@ -33,34 +30,16 @@ class GeneticAlgorythm:
             rating = self.evaluation(population)
             t += 1
         best_simulation = max(population, key=lambda simulation: simulation.score)
-        logging.debug(f"______ OUTPUT _____ \nMax score in last generation {t}: {best_simulation.score} \nWeights values: {best_simulation.weights}\n_____________________________")
+        logging.debug(f"______ OUTPUT _____"
+                      f"\nMax score in last generation {t}: {best_simulation.score}"
+                      f"\nWeights "
+                      f"values: {best_simulation.weights}\n_____________________________")
 
     def initialize_population(self):
         population = []
         for i in range(self.population_size):
-            population.append(Simulation(self.sim_consts, self.initialize_weights()))
+            population.append(Simulation(self.sim_consts, SimulationWeights.initialize_weights()))
         return population
-
-    @staticmethod
-    def initialize_weights():
-        """
-        "wzl": weight of the number of products in the order Z_L
-        "wzr": weight of order variety Z_R - quantity of product types in the order under consideration
-        "wzp": weight of the popularity of Z_P products - availability in warehouses included in the order under consideration
-        "wzo": weight of the distance between the current position of the aircraft and the target Z_O
-        "wml": weight of the quantity of the product available in the warehouse M_L
-        "wmz": weight of the distance between the warehouse location and the M_OZ destination point
-        "wmd": weight of the distance between the current position of the drone and the M_OD magazine
-        """
-        return {
-            "wzl": np.random.normal(0, 1),
-            "wzr": np.random.normal(0, 1),
-            "wzp": np.random.normal(0, 1),
-            "wzo": np.random.normal(0, 1),
-            "wml": np.random.normal(0, 1),
-            "wmz": np.random.normal(0, 1),
-            "wmd": np.random.normal(0, 1)
-        }
 
     def tournament_selection(self, population):
         new_population = []

@@ -2,6 +2,7 @@ import math
 from copy import deepcopy
 from typing import Dict
 
+from algorythm.SimulationWeights import SimulationWeights
 from objects import Drone, Order
 from algorythm import SimulationParameters
 from utilities import Utilities
@@ -9,9 +10,14 @@ import logging
 
 
 class Simulation:
-    def __init__(self, parameters: SimulationParameters, weights: Dict[str, int]):
+    def __init__(self,
+                 parameters: SimulationParameters,
+                 weights: Dict[str, int] = None):
         self.parameters = deepcopy(parameters)
-        self.weights = weights
+        if weights is not None:
+            self.weights = weights
+        else:
+            self.weights = SimulationWeights.initialize_weights()
         self.score = 0
 
     def run(self):
@@ -46,16 +52,16 @@ class Simulation:
     def evaluate_orders(self):
         for order in self.parameters.orders:
             order.score = self.weights["wzl"] * order.amount + \
-                          self.weights["wzr"] * len(order.items.keys())
+                          self.weights["wzr"] * len(order._items.keys())
             # TODO: Add more parameters
         self.parameters.orders.sort(reverse=True, key=lambda o: o.score)
 
     def evaluate_warehouses(self, drone: Drone, order: Order):
         for warehouse in self.parameters.warehouses:
             items_to_pick = 0
-            for item_type in order.items.keys():
+            for item_type in order._items.keys():
                 if item_type in warehouse.items.keys():
-                    items_to_pick += min(order.items[item_type].get_remains(), warehouse.items[item_type].current)
+                    items_to_pick += min(order._items[item_type].get_remains(), warehouse.items[item_type].current)
 
             if items_to_pick != 0:
                 warehouse.score = self.weights["wmz"] * Utilities.calc_distance(order.coordinates, warehouse.coordinates) + \
@@ -67,19 +73,19 @@ class Simulation:
 
         self.parameters.warehouses.sort(reverse=True, key=lambda w: w.score)
 
-    def draw_map(self):
-        for row in range(self.parameters.rows):
-            for column in range(self.parameters.columns):
-                no_object = True
-                for warehouse in self.parameters.warehouses:
-                    if [row, column] == warehouse.coordinates:
-                        logging.info("W", end="")
-                        no_object = False
-                for order in self.parameters.orders:
-                    if [row, column] == order.coordinates:
-                        logging.info("O", end="")
-                        no_object = False
-                if no_object:
-                    logging.info("-", end="")
-            logging.info()
-        logging.info()
+    # def draw_map(self):
+    #     for row in range(self.parameters.rows):
+    #         for column in range(self.parameters.columns):
+    #             no_object = True
+    #             for warehouse in self.parameters.warehouses:
+    #                 if [row, column] == warehouse.coordinates:
+    #                     logging.info("W", end="")
+    #                     no_object = False
+    #             for order in self.parameters.orders:
+    #                 if [row, column] == order.coordinates:
+    #                     logging.info("O", end="")
+    #                     no_object = False
+    #             if no_object:
+    #                 logging.info("-", end="")
+    #         logging.info()
+    #     logging.info()

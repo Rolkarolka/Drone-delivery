@@ -33,7 +33,7 @@ class Drone:
         return self.time_to_ready == 0
 
     def has_all_items(self) -> bool:
-        return self.order.items.has_all()
+        return self.order.has_all_items()
 
     def set_order(self, order: Order):
         self.order = order
@@ -61,11 +61,11 @@ class Drone:
 
     def reserve_goods(self, warehouse: Warehouse):
         self.warehouse = warehouse
-        self.order.items.reserve(warehouse.items)
+        self.order.reserve_items(warehouse.items)
 
     def load(self):
         logging.info(f"{self} is loading items from {self.warehouse}")
-        self.time_to_ready += self.order.items.move_from_reserve()
+        self.time_to_ready += self.order.move_from_reserve()
         self.warehouse = None
         self.status = "LOADING"
 

@@ -2,7 +2,13 @@ from objects import *
 
 
 class SimulationParameters:
-    def __init__(self, columns=None, rows=None, max_turns=None, max_payload=None, drones=None, types=None,
+    def __init__(self,
+                 columns=None,
+                 rows=None,
+                 max_turns=None,
+                 max_payload=None,
+                 drones=None,
+                 types=None,
                  warehouses=None,
                  orders=None):
         self.columns = columns
@@ -14,7 +20,13 @@ class SimulationParameters:
         self.warehouses = warehouses
         self.orders = orders
 
-    def load_file(self, filename: str):
+    @staticmethod
+    def from_file(filename: str):
+        simulation_parameters = SimulationParameters()
+        simulation_parameters._load_file(filename)
+        return simulation_parameters
+
+    def _load_file(self, filename: str):
         with open(filename) as file:
             lines = file.readlines()
         basic_info_lines_amount = 3
