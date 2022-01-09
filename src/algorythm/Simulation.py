@@ -20,9 +20,9 @@ class Simulation:
             self.weights = SimulationWeights.initialize_weights()
         self.score = 0
 
-    def run(self):
+    def run(self, turn_filter: int = 1):
         for turn in range(self.parameters.max_turns):
-            if turn % 100 == 0:
+            if turn % turn_filter == 0:
                 logging.info(f"Turn {turn}")
             for drone in self.parameters.drones:
                 if drone.is_ready():
@@ -32,9 +32,11 @@ class Simulation:
 
                     if drone.status == "NO_TARGET":
                         if not drone.has_all_items():
-                            self.evaluate_warehouses(drone, drone.order)
-                            drone.reserve_goods(self.parameters.warehouses[0])
-                            drone.fly_to_load()
+                            if drone.get_remaining_load() > 0:
+                                self.evaluate_warehouses(drone, drone.order)
+                                drone.fly_to_load(self.parameters.warehouses[0])
+                            else:
+                                drone.fly_to_order()
                         else:
                             drone.fly_to_order()
 

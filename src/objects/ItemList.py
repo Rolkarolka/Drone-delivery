@@ -6,16 +6,22 @@ class ItemList:
         if index_list is not None:
             self.from_index_list(index_list)
 
+    def count(self) -> int:
+        num = 0
+        for item_type in self.items.keys():
+            num += self.items[item_type].current
+        return num
+
     def from_list(self, item_list):
         for i in range(len(item_list)):
-            self.items[i] = Item(item_list[i], 0, 0)
+            self.items[i] = Item(item_list[i], 0)
 
     def from_index_list(self, item_list):
         for index in item_list:
             if index in self.items.keys():
                 self.items[index].total += 1
             else:
-                self.items[index] = Item(1, 0, 0)
+                self.items[index] = Item(1, 0)
 
     def has_all(self) -> bool:
         for item_type in self.items.keys():
@@ -23,20 +29,23 @@ class ItemList:
                 return False
         return True
 
-    def reserve(self, item_list):
+    def load(self, item_list, max_load) -> int:
+        types = 0
         for item_type in self.items.keys():
             amount = self.items[item_type].get_remains()
-            if amount != 0 and item_type in item_list.keys():
-                amount = min(item_list[item_type].current, amount)
-                item_list[item_type].current -= amount
-                self.items[item_type].reserved += amount
+            if item_type in item_list.keys():
+                amount = min(item_list[item_type].current, amount, max_load)
+                max_load -= amount
+                if amount != 0:
+                    types += 1
+                    item_list[item_type].current -= amount
+                    self.items[item_type].current += amount
+        return types
 
-    def move_from_reserve(self) -> int:
-        no_types = 0
+    def unload(self):
         for item_type in self.items.keys():
-            if self.items[item_type].move_from_reserve():
-                no_types += 1
-        return no_types
+            self.items[item_type].unload()
+        return 1
 
     def fill(self):
         for item_type in self.items.keys():
@@ -53,9 +62,8 @@ class ItemList:
 
 
 class Item:
-    def __init__(self, total, reserved, current):
+    def __init__(self, total, current):
         self.total = total
-        self.reserved = reserved
         self.current = current
 
     def has_all(self) -> bool:
@@ -64,10 +72,10 @@ class Item:
     def get_remains(self):
         return self.total - self.current
 
-    def move_from_reserve(self):
-        if self.reserved > 0:
-            self.current += self.reserved
-            self.reserved = 0
+    def unload(self):
+        if self.current > 0:
+            self.total -= self.current
+            self.current -= self.current
             return True
         else:
             return False
@@ -76,4 +84,4 @@ class Item:
         self.current = self.total
 
     def __repr__(self):
-        return f"{self.total}/{self.reserved}/{self.current}"
+        return f"{self.total}/{self.current}"

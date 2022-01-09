@@ -9,14 +9,17 @@ class Order:
         self.score = 0
         self._items = ItemList(index_list=products)
 
+    def get_load(self) -> int:
+        return self._items.count()
+
     def has_all_items(self) -> bool:
         return self._items.has_all()
 
-    def reserve_items(self, item_list):
-        return self._items.reserve(item_list)
+    def unload(self):
+        return self._items.unload()
 
-    def move_from_reserve(self) -> int:
-        return self._items.move_from_reserve()
+    def load(self, item_list, max_load) -> int:
+        return self._items.load(item_list, max_load)
 
     def __repr__(self):
         return f"Order {self.index}: {self.coordinates}"
