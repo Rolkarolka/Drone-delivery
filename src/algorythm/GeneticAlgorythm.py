@@ -33,7 +33,8 @@ class GeneticAlgorythm:
         logging.debug(f"______ OUTPUT _____"
                       f"\nMax score in last generation {t}: {best_simulation.score}"
                       f"\nWeights "
-                      f"values: {best_simulation.weights}\n_____________________________")
+                      f"values: {best_simulation.weights}\n"
+                      f"_____________________________")
 
     def initialize_population(self):
         population = []

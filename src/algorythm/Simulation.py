@@ -34,18 +34,12 @@ class Simulation:
                         if not drone.has_all_items():
                             self.evaluate_warehouses(drone, drone.order)
                             drone.reserve_goods(self.parameters.warehouses[0])
-                            drone.fly_to_warehouse()
+                            drone.fly_to_load()
                         else:
                             drone.fly_to_order()
 
-                    if drone.status == "READY_TO_LOAD":
-                        drone.load()
-
-                    if drone.status == "READY_TO_DELIVER":
-                        drone.deliver()
-
-                    if drone.status == "READY_TO_SCORE":
-                        self.score += drone.calc_score(self.parameters.max_turns, turn)
+                if drone.is_ready() and drone.status == "READY_TO_SCORE":
+                    self.score += drone.calc_score(self.parameters.max_turns, turn)
                 drone.update_time()
         logging.info(f"Total simulation score = {self.score}")
 
