@@ -1,6 +1,6 @@
 import math
 from enum import Enum
-from objects import Order, Warehouse
+from objects import Order, Warehouse, ItemList, Item
 from utilities import Utilities
 import logging
 
@@ -21,8 +21,12 @@ class Drone:
 
         self.status: DroneStatus = DroneStatus.NO_ORDER
         self.order = None
+        self.equipment = ItemList()
 
     def update_time(self):
+        if self.equipment.count() > 19:
+            raise Exception("Too much for me")
+
         self.turn += 1
         if self.time_to_ready > 0:
             self.time_to_ready -= 1
@@ -30,11 +34,11 @@ class Drone:
     def is_ready(self):
         return self.time_to_ready == 0
 
-    def get_remaining_load(self):
-        return self.max_load - self.order.get_load()
-
     def has_all_items(self) -> bool:
         return self.order.has_all_items()
+
+    def get_remaining_load(self) -> int:
+        return max(self.max_load - self.equipment.count(), 0)
 
     def set_order(self, order: Order):
         self.order = order
@@ -42,21 +46,42 @@ class Drone:
         logging.debug(f"Turn {self.turn}: {self} will be delivering {order}")
 
     def fly_to_load(self, warehouse: Warehouse):
-        logging.debug(f"Turn {self.turn}: {self} will be flying to {warehouse} and loading items")
+        logging.debug(f"Turn {self.turn}: {self} will be flying to {warehouse}")
         fly_time = self.fly_to(warehouse)
-        loading_time = self.order.load(warehouse.items, self.get_remaining_load())
-        logging.debug(f"Turn {self.turn}: It will take {fly_time}+{loading_time}={fly_time+loading_time} turns")
+        loading_time = self.load(self.order.items, warehouse.items)
+        logging.debug(f"Turn {self.turn}: {self} will take next task in {fly_time}+{loading_time}={fly_time+loading_time} turns")
 
         self.time_to_ready = fly_time + loading_time
         self.status = DroneStatus.NO_TARGET
 
-    def fly_to_order(self):
-        logging.debug(f"Turn {self.turn}: {self} will be flying to {self.order} and unloading items")
-        fly_time = self.fly_to(self.order)
-        unloading = self.order.unload()
-        logging.debug(f"Turn {self.turn}: It will take {fly_time}+{unloading}={fly_time+unloading} turns")
+    def load(self, order_items: ItemList, warehouse_items: ItemList):
+        time_to_load = 0
+        for item in order_items._items.values():
+            if item.type in warehouse_items._items.keys():
+                result_quantity = min(self.get_remaining_load(), item.quantity, warehouse_items[item.type].quantity)
+                if result_quantity != 0:
+                    if item.type in self.equipment.keys():
+                        self.equipment[item.type].quantity += result_quantity
+                    else:
+                        self.equipment._items[item.type] = Item(item.type, result_quantity)
+                    order_items[item.type].quantity -= result_quantity
+                    warehouse_items[item.type].quantity -= result_quantity
+                    time_to_load += 1
+        logging.debug(f"Turn {self.turn}: {self} will be loading {self.equipment}")
+        return time_to_load
 
-        self.time_to_ready += fly_time + unloading
+    def unload(self):
+        logging.debug(f"Turn {self.turn}: {self} will be unloading {self.equipment}")
+        self.equipment.clear()
+        return 1  # Unloading always takes 1 turn
+
+    def fly_to_order(self):
+        logging.debug(f"Turn {self.turn}: {self} will be flying to {self.order}")
+        fly_time = self.fly_to(self.order)
+        unloading_time = self.unload()
+        logging.debug(f"Turn {self.turn}: {self} will take next task in {fly_time}+{unloading_time}={fly_time+unloading_time} turns")
+
+        self.time_to_ready += fly_time + unloading_time
         if self.order.has_all_items():
             self.status = DroneStatus.READY_TO_SCORE
         else:
