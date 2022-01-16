@@ -24,9 +24,6 @@ class Drone:
         self.equipment = ItemList()
 
     def update_time(self):
-        if self.equipment.count() > 19:
-            raise Exception("Too much for me")
-
         self.turn += 1
         if self.time_to_ready > 0:
             self.time_to_ready -= 1
@@ -56,19 +53,16 @@ class Drone:
 
     def load(self, order_items: ItemList, warehouse_items: ItemList):
         time_to_load = 0
-        for item in order_items._items.values():
-            if item.type in warehouse_items._items.keys():
+        for item in order_items.values():
+            if item.type in warehouse_items.keys():
                 result_quantity = min(self.get_remaining_load(), item.quantity, warehouse_items[item.type].quantity)
                 if result_quantity != 0:
-                    if item.type in self.equipment.keys():
-                        self.equipment[item.type].quantity += result_quantity
-                    else:
-                        self.equipment._items[item.type] = Item(item.type, result_quantity)
+                    self.equipment[item.type].quantity += result_quantity
                     order_items[item.type].quantity -= result_quantity
                     warehouse_items[item.type].quantity -= result_quantity
                     time_to_load += 1
         logging.debug(f"Turn {self.turn}: {self} will be loading {self.equipment}")
-        return time_to_load
+        return time_to_load  # Loading takes 1 turn for each type
 
     def unload(self):
         logging.debug(f"Turn {self.turn}: {self} will be unloading {self.equipment}")

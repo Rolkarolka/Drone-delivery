@@ -32,9 +32,6 @@ class ItemList:
                 return False
         return True
 
-    def keys(self):
-        return self._items.keys()
-
     def __getitem__(self, key):
         return self._items.get(key, Item(key, 0))
 
@@ -43,6 +40,9 @@ class ItemList:
 
     def values(self):
         return self._items.values()
+
+    def keys(self):
+        return self._items.keys()
 
     def clear(self):
         self._items.clear()
