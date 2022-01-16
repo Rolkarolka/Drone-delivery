@@ -36,12 +36,9 @@ class Simulation:
                         drone.set_order(self.parameters.orders.pop(0))
 
                     if drone.status == DroneStatus.NO_TARGET:
-                        if not drone.has_all_items():
-                            if drone.get_remaining_load() > 0:
-                                self.evaluate_warehouses(drone, drone.order)
-                                drone.fly_to_load(self.parameters.warehouses[0])
-                            else:
-                                drone.fly_to_order()
+                        if not drone.equipment:
+                            self.evaluate_warehouses(drone, drone.order)
+                            drone.fly_to_load(self.parameters.warehouses[0])
                         else:
                             drone.fly_to_order()
                 if drone.is_ready() and drone.status == DroneStatus.READY_TO_SCORE:
@@ -54,7 +51,7 @@ class Simulation:
     def evaluate_orders(self, drone: Drone):
         for order in self.parameters.orders:
             order.score = self.weights["wzl"] * order.amount + \
-                          self.weights["wzr"] * len(order._items.keys()) + \
+                          self.weights["wzr"] * len(order.items.keys()) + \
                           self.weights["wzo"] * Utilities.calc_distance(drone.coordinates, order.coordinates)
             # TODO: Add more parameters
         self.parameters.orders.sort(reverse=True, key=lambda o: o.score)
@@ -62,9 +59,9 @@ class Simulation:
     def evaluate_warehouses(self, drone: Drone, order: Order):
         for warehouse in self.parameters.warehouses:
             items_to_pick = 0
-            for item_type in order._items.keys():
+            for item_type in order.items.keys():
                 if item_type in warehouse.items.keys():
-                    items_to_pick += min(order._items[item_type].get_remains(), warehouse.items[item_type].current)
+                    items_to_pick += min(order.items[item_type].quantity, warehouse.items[item_type].quantity)
 
             if items_to_pick != 0:
                 warehouse.score = self.weights["wmz"] * Utilities.calc_distance(order.coordinates, warehouse.coordinates) + \

@@ -7,7 +7,6 @@ class Warehouse:
         self.coordinates = coordinates
         self.score = 0
         self.items = ItemList(item_list=products)
-        self.items.fill()
 
     def __str__(self):
         return f"Warehouse {self.index}: {self.coordinates}"
