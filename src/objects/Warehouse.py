@@ -2,11 +2,11 @@ from objects import ItemList
 
 
 class Warehouse:
-    def __init__(self, index: int, coordinates, products: list):
+    def __init__(self, index: int, coordinates, items: ItemList):
         self.index = index
         self.coordinates = coordinates
         self.score = 0
-        self.items = ItemList(item_list=products)
+        self.items = items
 
     def __str__(self):
         return f"Warehouse {self.index}: {self.coordinates}"

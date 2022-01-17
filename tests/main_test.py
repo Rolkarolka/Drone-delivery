@@ -21,7 +21,7 @@ class TestSimulation:
         simulation_parameters = SimulationParameters().from_file("resources/busy_day.in")
         simulation = Simulation(simulation_parameters)
         simulation.run()
-        assert simulation.score == 90203
+        assert simulation.score == 90785
 
     def test_mini_simulation(self, logging_level: int = logging.INFO):
         self.prepare(logging_level)

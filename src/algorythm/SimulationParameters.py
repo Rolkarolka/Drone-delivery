@@ -19,6 +19,7 @@ class SimulationParameters:
         self.types = types
         self.warehouses = warehouses
         self.orders = orders
+        self.all_items = ItemList()
 
     @staticmethod
     def from_file(filename: str):
@@ -39,14 +40,14 @@ class SimulationParameters:
         self.drones = self._create_drone_list(no_drones, self.warehouses[0], self.max_payload)
         self.orders = self._create_order_list(lines[basic_info_lines_amount + 2 * len(self.warehouses) + 1:])
 
-    @staticmethod
-    def _create_warehouse_list(lines: [str]) -> [Warehouse]:
+    def _create_warehouse_list(self, lines: [str]) -> [Warehouse]:
         no_warehouses = int(lines[0].strip())
         warehouses = []
         for index, line_idx in zip(range(no_warehouses), range(1, 1 + no_warehouses * 2, 2)):
             warehouse_coordinates = list(map(int, lines[line_idx].strip().split(" ")))
-            stock_level = [int(product_type) for product_type in lines[line_idx + 1].strip().split(" ")]
-            warehouses.append(Warehouse(index, warehouse_coordinates, stock_level))
+            item_list = ItemList(item_list=[int(product_type) for product_type in lines[line_idx + 1].strip().split(" ")])
+            warehouses.append(Warehouse(index, warehouse_coordinates, item_list))
+            self.all_items.update(item_list)
         assert len(warehouses) == no_warehouses
         return warehouses
 

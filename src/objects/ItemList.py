@@ -32,6 +32,13 @@ class ItemList:
                 return False
         return True
 
+    def update(self, other):
+        for item in other.values():
+            if item.type in self._items.keys():
+                self._items[item.type].quantity += item.quantity
+            else:
+                self._items[item.type] = item
+
     def __getitem__(self, key):
         return self._items.get(key, Item(key, 0))
 

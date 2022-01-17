@@ -50,10 +50,15 @@ class Simulation:
 
     def evaluate_orders(self, drone: Drone):
         for order in self.parameters.orders:
+
+            popularity = 0
+            for item in order.items.values():
+                popularity += item.quantity / self.parameters.all_items[item.type].quantity
+
             order.score = self.weights["wzl"] * order.amount + \
                           self.weights["wzr"] * len(order.items.keys()) + \
-                          self.weights["wzo"] * Utilities.calc_distance(drone.coordinates, order.coordinates)
-            # TODO: Add more parameters
+                          self.weights["wzo"] * Utilities.calc_distance(drone.coordinates, order.coordinates) + \
+                          self.weights["wzp"] * popularity
         self.parameters.orders.sort(reverse=True, key=lambda o: o.score)
 
     def evaluate_warehouses(self, drone: Drone, order: Order):
