@@ -88,7 +88,7 @@ class Drone:
 
     def calc_score(self, max_turns, turn) -> int:
         score = math.ceil((max_turns - (turn + 1.0)) / max_turns * 100.0)
-        logging.info(f"Turn {self.turn}: {self} finished {self.order}, score = {score}")
+        logging.debug(f"Turn {self.turn}: {self} finished {self.order}, score = {score}")
         self.status = DroneStatus.NO_ORDER
         self.order = None
         return score
