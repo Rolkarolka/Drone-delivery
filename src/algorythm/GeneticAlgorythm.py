@@ -1,20 +1,16 @@
-from copy import deepcopy
-
-from algorythm import Simulation, SimulationParameters
+from algorythm import Selection, SelectionType, SimulationParameters, Simulation, SimulationWeights
 import numpy as np
 import random
 import logging
 
-from algorythm.SimulationWeights import SimulationWeights
-
 
 class GeneticAlgorythm:
-    def __init__(self, filename, population_size, max_generations, elite_size=5, tournament_size=2):
+    def __init__(self, filename, population_size, max_generations, elite_size=5, selection_type=SelectionType.TOURNAMENT_SELECTION):
         self.sim_consts = SimulationParameters.from_file(filename)
         self.max_generations = max_generations
         self.population_size = population_size
+        self.selection = Selection().return_selection_type(selection_type)
         self.elite_size = elite_size
-        self.tournament_size = tournament_size
         self.algorithm()
 
     def algorithm(self):
@@ -23,7 +19,7 @@ class GeneticAlgorythm:
         rating = self.evaluation(population)
         while t < self.max_generations:
             logging.debug(f"Max score in current generation {t}: {max([simulation.score for simulation in population])}")
-            t_population = self.tournament_selection(population)
+            t_population = self.selection(population)
             m_population = self.mutation(t_population)
             population = self.elite_succession(rating, m_population)
             population = self.reset_simulations(population)
@@ -41,13 +37,6 @@ class GeneticAlgorythm:
         for i in range(self.population_size):
             population.append(Simulation(self.sim_consts, SimulationWeights.initialize_weights()))
         return population
-
-    def tournament_selection(self, population):
-        new_population = []
-        for _ in population:
-            opponents = [population[np.random.randint(len(population))] for _ in range(self.tournament_size)]
-            new_population.append(deepcopy(max(opponents, key=lambda single_simulation: single_simulation.score)))
-        return new_population
 
     @staticmethod
     def evaluation(population):
