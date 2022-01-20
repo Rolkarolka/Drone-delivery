@@ -1,9 +1,10 @@
-from algorythm import Selection, SelectionType, SimulationParameters, Simulation, SimulationWeights
+from simulation import SimulationParameters, Simulation, SimulationWeights
+from algorythm import Selection, SelectionType
+from utilities import Utilities
 import threading
 import numpy as np
 import random
 import logging
-from utilities import Utilities
 
 
 class GeneticAlgorythm:

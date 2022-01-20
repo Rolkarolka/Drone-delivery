@@ -2,9 +2,8 @@ import math
 from copy import deepcopy
 from typing import Dict
 
-from algorythm.SimulationWeights import SimulationWeights
 from objects import Drone, Order, DroneStatus
-from algorythm import SimulationParameters
+from simulation import SimulationParameters, SimulationWeights
 from utilities import Utilities
 import logging
 

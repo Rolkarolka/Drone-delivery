@@ -1,6 +1,6 @@
 import math
 from enum import Enum
-from objects import Order, Warehouse, ItemList, Item
+from objects import Order, Warehouse, ItemList
 from utilities import Utilities
 import logging
 
