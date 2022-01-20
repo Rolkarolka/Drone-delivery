@@ -1,5 +1,5 @@
 from simulation import SimulationParameters, Simulation, SimulationWeights
-from algorythm import Selection, SelectionType, MutationType, Mutation
+from algorythm import Selection, SelectionType, MutationType, Mutation, Succession, SuccessionType
 from utilities import Utilities
 import threading
 import numpy as np
@@ -10,7 +10,8 @@ import logging
 class GeneticAlgorythm:
     def __init__(self, filename, population_size, max_generations, elite_size=5,
                  selection_type=SelectionType.TOURNAMENT_SELECTION,
-                 mutation_type=MutationType.GAUSSIAN_MUTATION):
+                 mutation_type=MutationType.GAUSSIAN_MUTATION,
+                 succession_type=SuccessionType.ELITE_SUCCESSION):
         self.sim_consts = SimulationParameters.from_file(filename)
         self.max_generations = max_generations
         self.population_size = population_size
@@ -19,6 +20,7 @@ class GeneticAlgorythm:
         self.succession_type = succession_type
         self.mutation = Mutation().return_mutation_type(mutation_type)
         self.selection = Selection().return_selection_type(selection_type)
+        self.succession = Succession().return_succession_type(succession_type)
         self.algorithm()
 
     def algorithm(self):
@@ -33,7 +35,7 @@ class GeneticAlgorythm:
 
             t_population = self.selection(population)
             m_population = self.mutation(t_population)
-            population = self.elite_succession(rating, m_population)
+            population = self.succession(rating, m_population)
             population = self.reset_simulations(population)
             rating = self.evaluation(population)
             t += 1
@@ -44,6 +46,7 @@ class GeneticAlgorythm:
                      f"{best_simulation.weights}")
         Utilities.draw_plot(score_history, filename="algorithm.jpg", title=f"Generic algorythm "
                                                                            f"(pop={self.population_size}/"
+                                                                           f"succession={self.succession_type}/"
                                                                            f"mutation={self.mutation_type}/"
                                                                            f"selection={self.selection_type})", )
 
