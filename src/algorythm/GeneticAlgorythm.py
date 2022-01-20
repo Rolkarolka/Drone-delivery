@@ -1,20 +1,24 @@
 from simulation import SimulationParameters, Simulation, SimulationWeights
-from algorythm import Selection, SelectionType
+from algorythm import Selection, SelectionType, MutationType, Mutation
 from utilities import Utilities
 import threading
 import numpy as np
-import random
+from copy import deepcopy
 import logging
 
 
 class GeneticAlgorythm:
-    def __init__(self, filename, population_size, max_generations, elite_size=5, selection_type=SelectionType.TOURNAMENT_SELECTION):
+    def __init__(self, filename, population_size, max_generations, elite_size=5,
+                 selection_type=SelectionType.TOURNAMENT_SELECTION,
+                 mutation_type=MutationType.GAUSSIAN_MUTATION):
         self.sim_consts = SimulationParameters.from_file(filename)
         self.max_generations = max_generations
         self.population_size = population_size
         self.selection_type = selection_type
+        self.mutation_type = mutation_type
+        self.succession_type = succession_type
+        self.mutation = Mutation().return_mutation_type(mutation_type)
         self.selection = Selection().return_selection_type(selection_type)
-        self.elite_size = elite_size
         self.algorithm()
 
     def algorithm(self):
@@ -40,7 +44,7 @@ class GeneticAlgorythm:
                      f"{best_simulation.weights}")
         Utilities.draw_plot(score_history, filename="algorithm.jpg", title=f"Generic algorythm "
                                                                            f"(pop={self.population_size}/"
-                                                                           f"elite={self.elite_size}/"
+                                                                           f"mutation={self.mutation_type}/"
                                                                            f"selection={self.selection_type})", )
 
     @staticmethod
@@ -59,6 +63,9 @@ class GeneticAlgorythm:
             population.append(Simulation(self.sim_consts, SimulationWeights.initialize_weights()))
         return population
 
+    def reset_simulations(self, population):
+        return [Simulation(self.sim_consts, simulation.weights) for simulation in population]
+
     @staticmethod
     def evaluation(population):
         threads = []
@@ -71,20 +78,3 @@ class GeneticAlgorythm:
         rated = sorted(population, key=lambda single_simulation: single_simulation.score)
         rated.reverse()
         return rated
-
-    @staticmethod
-    def mutation(population):
-        for simulation in population:
-            # choose which and how many of weights will be muted
-            weights_to_be_muted = random.sample(list(simulation.weights),
-                                                random.randint(0, len(simulation.weights.keys())))
-            # mute chosen
-            for weight in weights_to_be_muted:
-                simulation.weights[weight] = np.random.normal(0, 1)
-        return population
-
-    def elite_succession(self, last_population, current_population):
-        return last_population[0:self.elite_size] + current_population[0:-self.elite_size]
-
-    def reset_simulations(self, population):
-        return [Simulation(self.sim_consts, simulation.weights) for simulation in population]
