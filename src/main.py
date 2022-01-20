@@ -13,8 +13,7 @@ if __name__ == '__main__':
     logging.basicConfig(
         format='%(asctime)s %(levelname)-8s %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S',
-        filename=get_project_root() + '/log/algorithm.log',
-        level=logging.DEBUG
+        level=logging.INFO
     )
     seed(2137)
     np.random.seed(2137)

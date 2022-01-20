@@ -46,7 +46,7 @@ class Simulation:
                 drone.update_time()
             if len(self.parameters.orders) == 0 and not self.are_drones_working():
                 break
-        logging.info(f"Total simulation score = {self.score}")
+        logging.debug(f"Total simulation score = {self.score}")
 
     def evaluate_orders(self, drone: Drone):
         for order in self.parameters.orders:
