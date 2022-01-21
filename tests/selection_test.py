@@ -34,6 +34,7 @@ def test_selection(selection_type):
     # then:
     sp_score = [simulation.score for simulation in s_population]
     assert sp_score == [62, 64, 64, 62]
+    assert len(s_population) == len(population)
 
 
 def test_no_selection():
@@ -44,6 +45,7 @@ def test_no_selection():
     s_population = selection_func(population)
     # then:
     assert [simulation.score for simulation in s_population] == [simulation.score for simulation in population]
+    assert len(s_population) == len(population)
 
 
 @pytest.mark.parametrize("selection_type, func_name",
