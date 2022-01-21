@@ -18,4 +18,4 @@ if __name__ == '__main__':
     seed(2137)
     np.random.seed(2137)
     algorythm = GeneticAlgorythm('resources/busy_day.in', 20, 100)
-    pass
+    algorythm.start()

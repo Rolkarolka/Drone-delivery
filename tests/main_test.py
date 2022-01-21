@@ -1,5 +1,5 @@
 import numpy as np
-from algorythm import Simulation, SimulationParameters
+from src.simulation import Simulation, SimulationParameters
 from random import seed
 import logging
 

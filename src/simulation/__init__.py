@@ -1,3 +1,3 @@
-from simulation.Parameters import SimulationParameters
-from simulation.Weights import SimulationWeights
-from simulation.Simulation import Simulation
+from src.simulation.Parameters import SimulationParameters
+from src.simulation.Weights import SimulationWeights
+from src.simulation.Simulation import Simulation

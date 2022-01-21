@@ -1,6 +1,6 @@
-from simulation import SimulationParameters, Simulation, SimulationWeights
-from algorythm import Selection, SelectionType, MutationType, Mutation, Succession, SuccessionType, CrossOverType, CrossOver
-from utilities import Utilities
+from src.simulation import SimulationParameters, Simulation, SimulationWeights
+from src.algorythm import Selection, SelectionType, MutationType, Mutation, Succession, SuccessionType, CrossOverType, CrossOver
+from src.utilities import Utilities
 import threading
 import numpy as np
 import logging
@@ -24,7 +24,7 @@ class GeneticAlgorythm:
         self.succession = Succession().return_succession_type(succession_type)
         self.cross_over = CrossOver().return_cross_over_type(cross_over_type)
 
-    def algorithm(self):
+    def start(self):
         t = 0
         population = self.initialize_population()
         rating = self.evaluation(population)

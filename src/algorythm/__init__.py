@@ -1,5 +1,5 @@
-from algorythm.Selection import SelectionType, Selection
-from algorythm.Mutation import MutationType, Mutation
-from algorythm.Succession import SuccessionType, Succession
-from algorythm.CrossOver import CrossOverType, CrossOver
-from algorythm.GeneticAlgorythm import GeneticAlgorythm
+from src.algorythm.Selection import SelectionType, Selection
+from src.algorythm.Mutation import MutationType, Mutation
+from src.algorythm.Succession import SuccessionType, Succession
+from src.algorythm.CrossOver import CrossOverType, CrossOver
+from src.algorythm.GeneticAlgorythm import GeneticAlgorythm
