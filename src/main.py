@@ -1,5 +1,5 @@
 import numpy as np
-from algorythm import GeneticAlgorythm
+from src.algorythm import GeneticAlgorythm
 from random import seed
 import logging
 from subprocess import check_output

@@ -10,7 +10,7 @@ import logging
 class GeneticAlgorythm:
     def __init__(self, filename, population_size, max_generations,
                  selection_type=SelectionType.TOURNAMENT_SELECTION,
-                 mutation_type=MutationType.UNIFORM_MUTATION,
+                 mutation_type=MutationType.GAUSSIAN_MUTATION,
                  succession_type=SuccessionType.ELITE_SUCCESSION,
                  cross_over_type=CrossOverType.NONE):
         self.sim_consts = SimulationParameters.from_file(filename)
