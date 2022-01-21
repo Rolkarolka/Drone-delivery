@@ -1,5 +1,6 @@
 from src.simulation import SimulationParameters, Simulation, SimulationWeights
-from src.algorythm import Selection, SelectionType, MutationType, Mutation, Succession, SuccessionType, CrossOverType, CrossOver
+from src.algorythm import Selection, SelectionType, MutationType, Mutation, Succession, SuccessionType, CrossOverType, \
+    CrossOver
 from src.utilities import Utilities
 import threading
 import numpy as np
@@ -46,12 +47,20 @@ class GeneticAlgorythm:
         logging.info(f"Generation {t} [min/avr/max]: {aggregated_results}\n"
                      f"Weights:\n"
                      f"{best_simulation.weights}")
-        Utilities.draw_plot(score_history, filename="algorithm.jpg", title=f"Generic algorythm "
-                                                                           f"(pop={self.population_size}/"
-                                                                           f"succession={self.succession_type}/"
-                                                                           f"mutation={self.mutation_type}/"
-                                                                           f"cross-over={self.cross_over_type}/"
-                                                                           f"selection={self.selection_type})", )
+        Utilities.draw_plot(score_history,
+                            filename=f"algorithm_"
+                                     f"{self.population_size}_"
+                                     f"{self.succession_type.value}"
+                                     f"{self.mutation_type.value}"
+                                     f"{self.cross_over_type.value}"
+                                     f"{self.selection_type.value}"
+                                     f".jpg",
+                            title=f"Generic algorythm "
+                                  f"(pop={self.population_size}/"
+                                  f"suc={self.succession_type.value}/"
+                                  f"mut={self.mutation_type.value}/"
+                                  f"cro={self.cross_over_type.value}/"
+                                  f"sel={self.selection_type.value})")
 
     @staticmethod
     def aggregate_results(population):

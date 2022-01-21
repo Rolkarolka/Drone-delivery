@@ -13,9 +13,13 @@ if __name__ == '__main__':
     logging.basicConfig(
         format='%(asctime)s %(levelname)-8s %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S',
-        level=logging.DEBUG
+        level=logging.INFO,
+        handlers=[
+            logging.FileHandler("log/info.log"),
+            logging.StreamHandler()
+        ]
     )
     seed(2137)
     np.random.seed(2137)
-    algorythm = GeneticAlgorythm('resources/busy_day.in', 20, 100)
+    algorythm = GeneticAlgorythm('resources/busy_day.in', 20, 50)
     algorythm.start()
