@@ -7,6 +7,7 @@ class SelectionType(Enum):
     TOURNAMENT_SELECTION = 1
     ROULETTE_WHEEL_SELECTION = 2
     RANK_SELECTION = 3
+    NONE_SELECTION = 4
 
 
 class Selection:
@@ -24,11 +25,11 @@ class Selection:
     def roulette_wheel_selection(self, population):
         score_sum = sum([simulation.score for simulation in population])
         simulation_probabilities = [simulation.score / score_sum for simulation in population]
-        return np.random.choice(population, p=simulation_probabilities)
+        return np.random.choice(population, size=len(population), p=simulation_probabilities)
 
     def rank_selection(self, population):
         best_simulations = population[:int(self.stayed_ranked_population_percent * len(population))]
-        return np.random.choice(best_simulations)
+        return np.random.choice(best_simulations, size=len(population))
 
     def no_selection(self, population):
         return population
