@@ -1,3 +1,5 @@
+from src.algorythm import Mutation, GeneticAlgorythm, MutationType
+
 from random import seed
 import numpy as np
 import pytest
@@ -5,8 +7,6 @@ import sys
 
 sys.path.append('.')
 sys.path.append('./src')
-
-from src.algorythm import Mutation, GeneticAlgorythm, MutationType
 
 
 def prepare_arguments_before_test(mutation_type):

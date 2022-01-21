@@ -1,5 +1,5 @@
-from objects.Item import Item
-from objects.ItemList import ItemList
-from objects.Warehouse import Warehouse
-from objects.Drone import Drone, DroneStatus
-from objects.Order import Order
+from src.objects.Item import Item
+from src.objects.ItemList import ItemList
+from src.objects.Warehouse import Warehouse
+from src.objects.Drone import Drone, DroneStatus
+from src.objects.Order import Order

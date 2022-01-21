@@ -1,4 +1,4 @@
-from objects import Item
+from src.objects import Item
 
 
 class ItemList:

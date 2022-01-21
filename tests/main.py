@@ -1,6 +1,6 @@
-import logging
-
 from tests.main_test import TestSimulation
+
+import logging
 
 if __name__ == '__main__':
     sim = TestSimulation()
