@@ -12,7 +12,7 @@ sys.path.append('./src')
 def prepare_arguments_before_test(mutation_type):
     seed(2137)
     np.random.seed(2137)
-    algorythm = GeneticAlgorythm('resources/busy_day.in', 20, 100, mutation_type=mutation_type)
+    algorythm = GeneticAlgorythm('resources/busy_day_mini.in', 20, 100, mutation_type=mutation_type)
     population = algorythm.initialize_population()
     mutation = Mutation()
     return mutation, population

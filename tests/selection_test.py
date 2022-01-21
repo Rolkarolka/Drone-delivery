@@ -12,7 +12,7 @@ from src.algorythm import Selection, SelectionType, GeneticAlgorythm
 def prepare_arguments_before_test(selection_type):
     seed(2137)
     np.random.seed(2137)
-    algorythm = GeneticAlgorythm('resources/busy_day.in', 4, 3, selection_type=selection_type)
+    algorythm = GeneticAlgorythm('resources/busy_day_mini.in', 4, 3, selection_type=selection_type)
     population = algorythm.initialize_population()
 
     for simulation in population:

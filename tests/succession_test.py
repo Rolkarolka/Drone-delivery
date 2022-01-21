@@ -12,7 +12,7 @@ from src.algorythm import Succession, SuccessionType, GeneticAlgorythm
 def prepare_arguments_before_test(selection_type):
     seed(2137)
     np.random.seed(2137)
-    algorythm = GeneticAlgorythm('resources/busy_day.in', 4, 3, selection_type=selection_type)
+    algorythm = GeneticAlgorythm('resources/busy_day_mini.in', 4, 3, selection_type=selection_type)
     init_population = algorythm.initialize_population()
     rating = algorythm.evaluation(init_population)
     population = algorythm.mutation(init_population)
@@ -43,7 +43,6 @@ def test_steady_state_succession():
     # then:
     assert len(s_population) == len(population)
     assert len(s_population) == len(rating)
-    assert s_population[0].weights == {}
 
 
 @pytest.mark.parametrize("succession_type",
