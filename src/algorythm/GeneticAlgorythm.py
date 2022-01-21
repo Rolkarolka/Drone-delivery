@@ -24,8 +24,6 @@ class GeneticAlgorythm:
         self.succession = Succession().return_succession_type(succession_type)
         self.cross_over = CrossOver().return_cross_over_type(cross_over_type)
 
-        self.algorithm()
-
     def algorithm(self):
         t = 0
         population = self.initialize_population()
