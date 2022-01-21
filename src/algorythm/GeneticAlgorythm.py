@@ -1,26 +1,29 @@
 from simulation import SimulationParameters, Simulation, SimulationWeights
-from algorythm import Selection, SelectionType, MutationType, Mutation, Succession, SuccessionType
+from algorythm import Selection, SelectionType, MutationType, Mutation, Succession, SuccessionType, CrossOverType, CrossOver
 from utilities import Utilities
 import threading
 import numpy as np
-from copy import deepcopy
 import logging
 
 
 class GeneticAlgorythm:
-    def __init__(self, filename, population_size, max_generations, elite_size=5,
+    def __init__(self, filename, population_size, max_generations,
                  selection_type=SelectionType.TOURNAMENT_SELECTION,
                  mutation_type=MutationType.GAUSSIAN_MUTATION,
-                 succession_type=SuccessionType.ELITE_SUCCESSION):
+                 succession_type=SuccessionType.ELITE_SUCCESSION,
+                 cross_over_type=CrossOverType.LINEAR_CROSSOVER):
         self.sim_consts = SimulationParameters.from_file(filename)
         self.max_generations = max_generations
         self.population_size = population_size
         self.selection_type = selection_type
         self.mutation_type = mutation_type
         self.succession_type = succession_type
+        self.cross_over_type = cross_over_type
         self.mutation = Mutation().return_mutation_type(mutation_type)
         self.selection = Selection().return_selection_type(selection_type)
         self.succession = Succession().return_succession_type(succession_type)
+        self.cross_over = CrossOver().return_cross_over_type(cross_over_type)
+
         self.algorithm()
 
     def algorithm(self):
@@ -35,7 +38,8 @@ class GeneticAlgorythm:
 
             t_population = self.selection(population)
             m_population = self.mutation(t_population)
-            population = self.succession(rating, m_population)
+            c_population = self.cross_over(m_population)
+            population = self.succession(rating, c_population)
             population = self.reset_simulations(population)
             rating = self.evaluation(population)
             t += 1
@@ -48,6 +52,7 @@ class GeneticAlgorythm:
                                                                            f"(pop={self.population_size}/"
                                                                            f"succession={self.succession_type}/"
                                                                            f"mutation={self.mutation_type}/"
+                                                                           f"cross-over={self.cross_over_type}/"
                                                                            f"selection={self.selection_type})", )
 
     @staticmethod
@@ -78,6 +83,4 @@ class GeneticAlgorythm:
             thread.start()
         for thread in threads:
             thread.join()
-        rated = sorted(population, key=lambda single_simulation: single_simulation.score)
-        rated.reverse()
-        return rated
+        return sorted(population, key=lambda single_simulation: single_simulation.score, reverse=True)

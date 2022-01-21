@@ -30,6 +30,9 @@ class Selection:
         best_simulations = population[:int(self.stayed_ranked_population_percent * len(population))]
         return np.random.choice(best_simulations)
 
+    def no_selection(self, population):
+        return population
+
     def return_selection_type(self, selection_type):
         if selection_type == SelectionType.TOURNAMENT_SELECTION:
             return self.tournament_selection
@@ -37,3 +40,5 @@ class Selection:
             return self.rank_selection
         elif selection_type == SelectionType.ROULETTE_WHEEL_SELECTION:
             return self.roulette_wheel_selection
+        else:
+            return self.no_selection

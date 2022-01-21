@@ -7,6 +7,7 @@ class SuccessionType(Enum):
     ELITE_SUCCESSION = 1
     GENERATIONAL_SUCCESSION = 2
     STEADY_STATE_SUCCESSION = 3
+    NONE = 4
 
 
 class Succession:
@@ -32,7 +33,7 @@ class Succession:
     def return_succession_type(self, succession_type):
         if succession_type == SuccessionType.ELITE_SUCCESSION:
             return self.elite_succession
-        elif succession_type == SuccessionType.GENERATIONAL_SUCCESSION:
-            return self.generational_succession
         elif succession_type == SuccessionType.STEADY_STATE_SUCCESSION:
             return self.steady_state_succession
+        else:
+            return self.generational_succession
