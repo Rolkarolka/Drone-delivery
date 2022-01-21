@@ -45,8 +45,10 @@ def test_no_cross_over():
     co_population = cross_over_func(population)
     # then:
     assert len(co_population) == len(population)
-    assert co_population[0].weights == {'wzl': 0.04629639546248449, 'wzr': -0.9226039536760489, 'wzp': 0.46958468600224995, 'wzo': -1.5675182646238819, 'wml': 0.5025648293370546, 'wmz': 1.0554395114897537, 'wmd': 1.2415631138712244}
     assert id(co_population[0]) != id(population[0])
+    assert co_population[0].weights == {'wzl': 0.04629639546248449, 'wzr': -0.9226039536760489,
+                                        'wzp': 0.46958468600224995, 'wzo': -1.5675182646238819,
+                                        'wml': 0.5025648293370546, 'wmz': 1.0554395114897537, 'wmd': 1.2415631138712244}
 
 
 @pytest.mark.parametrize("cross_over_type, func_name",

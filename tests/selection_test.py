@@ -21,11 +21,11 @@ def prepare_arguments_before_test(selection_type):
     return selection, population
 
 
-@pytest.mark.parametrize("selection_type",
-                         [SelectionType.TOURNAMENT_SELECTION,
-                          SelectionType.RANK_SELECTION,
-                          SelectionType.ROULETTE_WHEEL_SELECTION])
-def test_selection(selection_type):
+@pytest.mark.parametrize("selection_type, expected_score",
+                         [(SelectionType.TOURNAMENT_SELECTION, [62, 64, 64, 62]),
+                          (SelectionType.RANK_SELECTION, [62, 62, 64, 64]),
+                          (SelectionType.ROULETTE_WHEEL_SELECTION, [62, 62, 64, 62])])
+def test_selection(selection_type, expected_score):
     # given:
     selection, population = prepare_arguments_before_test(selection_type)
     selection_func = selection.return_selection_type(selection_type)
@@ -33,7 +33,7 @@ def test_selection(selection_type):
     s_population = selection_func(population)
     # then:
     sp_score = [simulation.score for simulation in s_population]
-    assert sp_score == [62, 64, 64, 62]
+    assert sp_score == expected_score
     assert len(s_population) == len(population)
 
 
