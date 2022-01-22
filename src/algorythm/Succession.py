@@ -28,7 +28,7 @@ class Succession:
         for _ in range(amount_stayed_population):
             opponents = [np.random.choice(last_population), np.random.choice(current_population)]
             new_population.append(deepcopy(max(opponents, key=lambda single_simulation: single_simulation.score)))
-        return new_population + current_population[amount_stayed_population:]
+        return new_population + deepcopy(current_population[amount_stayed_population:])
 
     def return_succession_type(self, succession_type):
         if succession_type == SuccessionType.ELITE_SUCCESSION:

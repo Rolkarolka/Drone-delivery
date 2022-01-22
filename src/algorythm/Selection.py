@@ -25,11 +25,13 @@ class Selection:
     def roulette_wheel_selection(self, population):
         score_sum = sum([simulation.score for simulation in population])
         simulation_probabilities = [simulation.score / score_sum for simulation in population]
-        return np.random.choice(population, size=len(population), p=simulation_probabilities)
+        new_population = np.random.choice(population, size=len(population), p=simulation_probabilities)
+        return deepcopy(new_population.tolist())
 
     def rank_selection(self, population):
-        best_simulations = population[:int(self.stayed_ranked_population_percent * len(population))]
-        return np.random.choice(best_simulations, size=len(population))
+        best_simulations = deepcopy(population[:int(self.stayed_ranked_population_percent * len(population))])
+        new_population = np.random.choice(best_simulations, size=len(population))
+        return deepcopy(new_population.tolist())
 
     def no_selection(self, population):
         return population
