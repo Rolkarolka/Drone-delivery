@@ -29,9 +29,10 @@ class Selection:
         return deepcopy(new_population.tolist())
 
     def rank_selection(self, population):
-        best_simulations = deepcopy(population[:int(self.stayed_ranked_population_percent * len(population))])
-        new_population = np.random.choice(best_simulations, size=len(population))
-        return deepcopy(new_population.tolist())
+        new_population = deepcopy(sorted(population, key=lambda simulation: simulation.score, reverse=True))
+        best_simulations = new_population[:int(self.stayed_ranked_population_percent * len(new_population))]
+        new_population = np.random.choice(best_simulations, size=len(new_population))
+        return new_population.tolist()
 
     def no_selection(self, population):
         return population
