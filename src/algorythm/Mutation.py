@@ -31,7 +31,7 @@ class Mutation:
         return self.mutation(lambda: np.absolute(np.random.normal(0, 1)), population)
 
     def cauchy_mutation(self, population):
-        return self.mutation(lambda: np.random.standard_cauchy(len(population)), population)
+        return self.mutation(lambda: np.random.standard_cauchy(1), population)
 
     def no_mutation(self, population):
         return population
