@@ -1,3 +1,5 @@
+import time
+
 from src.simulation import SimulationParameters, Simulation, SimulationWeights
 from src.algorythm import Selection, SelectionType, MutationType, Mutation, Succession, SuccessionType, CrossOverType, \
     CrossOver
@@ -25,6 +27,13 @@ class GeneticAlgorythm:
         self.succession = Succession().return_succession_type(succession_type)
         self.cross_over = CrossOver().return_cross_over_type(cross_over_type)
 
+        self.algorithm_name = f"alg_" \
+                              f"{self.population_size}_" \
+                              f"{self.succession_type.value}_" \
+                              f"{self.mutation_type.value}_" \
+                              f"{self.cross_over_type.value}_" \
+                              f"{self.selection_type.value}_"
+
     def start(self):
         t = 0
         population = self.initialize_population()
@@ -33,6 +42,7 @@ class GeneticAlgorythm:
         while t < self.max_generations:
             aggregated_results = self.aggregate_results(population)
             logging.info(f"Generation {t} [min/avr/max]: {aggregated_results}")
+            self.save_raw_data(aggregated_results)
             score_history.append(aggregated_results)
 
             t_population = self.selection(population)
@@ -48,13 +58,7 @@ class GeneticAlgorythm:
                      f"Weights:\n"
                      f"{best_simulation.weights}")
         Utilities.draw_plot(score_history,
-                            filename=f"algorithm_"
-                                     f"{self.population_size}_"
-                                     f"{self.succession_type.value}"
-                                     f"{self.mutation_type.value}"
-                                     f"{self.cross_over_type.value}"
-                                     f"{self.selection_type.value}"
-                                     f".jpg",
+                            filename=f"log/plots/{self.algorithm_name}.jpg",
                             title=f"Generic algorythm "
                                   f"(pop={self.population_size}/"
                                   f"suc={self.succession_type.value}/"
@@ -71,6 +75,10 @@ class GeneticAlgorythm:
             max(simulation_results)
         )
         return aggregated_results
+
+    def save_raw_data(self, aggregated_results):
+        with open(f"log/raw_data/{self.algorithm_name}.txt", "a+") as file:
+            file.write(f"{aggregated_results[0]};{aggregated_results[1]};{aggregated_results[2]}\n")
 
     def initialize_population(self):
         population = []

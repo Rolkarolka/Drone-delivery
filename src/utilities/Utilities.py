@@ -14,6 +14,7 @@ class Utilities:
         avg_values = [data_tuple[1] for data_tuple in data]
         max_values = [data_tuple[2] for data_tuple in data]
 
+        fig = plt.figure()
         plt.plot(min_values, marker='o', label='Min score')
         plt.plot(avg_values, marker='o', label='Avg score')
         plt.plot(max_values, marker='o', label='Max score')
@@ -25,4 +26,5 @@ class Utilities:
         plt.subplots_adjust(left=0.15)
         if filename is not None:
             plt.savefig(filename)
-        plt.show()
+        plt.close(fig)
+        # plt.show()
