@@ -23,7 +23,7 @@ def prepare_arguments_before_test(selection_type):
 
 @pytest.mark.parametrize("selection_type, expected_score",
                          [(SelectionType.TOURNAMENT_SELECTION, [62, 64, 64, 62]),
-                          (SelectionType.RANK_SELECTION, [62, 62, 64, 64]),
+                          (SelectionType.RANK_SELECTION, [64, 64, 62, 62]),
                           (SelectionType.ROULETTE_WHEEL_SELECTION, [62, 62, 64, 62])])
 def test_selection(selection_type, expected_score):
     # given:

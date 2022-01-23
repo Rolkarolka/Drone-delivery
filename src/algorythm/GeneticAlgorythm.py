@@ -26,7 +26,7 @@ class GeneticAlgorythm:
         self.selection = Selection().return_selection_type(selection_type)
         self.succession = Succession().return_succession_type(succession_type)
         self.cross_over = CrossOver().return_cross_over_type(cross_over_type)
-
+        self.score_history = []
         self.algorithm_name = f"alg_" \
                               f"{self.population_size}_" \
                               f"{self.succession_type.value}_" \
@@ -38,13 +38,8 @@ class GeneticAlgorythm:
         t = 0
         population = self.initialize_population()
         rating = self.evaluation(population)
-        score_history = []
         while t < self.max_generations:
-            aggregated_results = self.aggregate_results(population)
-            logging.info(f"Generation {t} [min/avr/max]: {aggregated_results}")
-            self.save_raw_data(aggregated_results)
-            score_history.append(aggregated_results)
-
+            self.aggregate_results(population, t)
             t_population = self.selection(population)
             m_population = self.mutation(t_population)
             c_population = self.cross_over(m_population)
@@ -52,33 +47,9 @@ class GeneticAlgorythm:
             population = self.reset_simulations(population)
             rating = self.evaluation(population)
             t += 1
-        aggregated_results = self.aggregate_results(population)
+        self.aggregate_results(population, t)
         best_simulation = max(population, key=lambda simulation: simulation.score)
-        logging.info(f"Generation {t} [min/avr/max]: {aggregated_results}\n"
-                     f"Weights:\n"
-                     f"{best_simulation.weights}")
-        Utilities.draw_plot(score_history,
-                            filename=f"log/plots/{self.algorithm_name}.jpg",
-                            title=f"Generic algorythm "
-                                  f"(pop={self.population_size}/"
-                                  f"suc={self.succession_type.value}/"
-                                  f"mut={self.mutation_type.value}/"
-                                  f"cro={self.cross_over_type.value}/"
-                                  f"sel={self.selection_type.value})")
-
-    @staticmethod
-    def aggregate_results(population):
-        simulation_results = [simulation.score for simulation in population]
-        aggregated_results = (
-            min(simulation_results),
-            int(np.mean(simulation_results).round()),
-            max(simulation_results)
-        )
-        return aggregated_results
-
-    def save_raw_data(self, aggregated_results):
-        with open(f"log/raw_data/{self.algorithm_name}.txt", "a+") as file:
-            file.write(f"{aggregated_results[0]};{aggregated_results[1]};{aggregated_results[2]}\n")
+        self.present_algorithm_results(best_simulation)
 
     def initialize_population(self):
         population = []
@@ -99,3 +70,31 @@ class GeneticAlgorythm:
         for thread in threads:
             thread.join()
         return sorted(population, key=lambda single_simulation: single_simulation.score, reverse=True)
+
+    def aggregate_results(self, population, t):
+        simulation_results = [simulation.score for simulation in population]
+        aggregated_results = (
+            min(simulation_results),
+            int(np.mean(simulation_results).round()),
+            max(simulation_results)
+        )
+        logging.info(f"Generation {t} [min/avr/max]: {aggregated_results}")
+        self.save_raw_data(aggregated_results)
+        self.score_history.append(aggregated_results)
+        return aggregated_results
+
+    def present_algorithm_results(self, best_simulation):
+        logging.info(f"Weights:\n"
+                     f"{best_simulation.weights}")
+        Utilities.draw_plot(self.score_history,
+                            filename=f"log/plots/{self.algorithm_name}.jpg",
+                            title=f"Generic algorythm "
+                                  f"(pop={self.population_size}/"
+                                  f"suc={self.succession_type.value}/"
+                                  f"mut={self.mutation_type.value}/"
+                                  f"cro={self.cross_over_type.value}/"
+                                  f"sel={self.selection_type.value})")
+
+    def save_raw_data(self, aggregated_results):
+        with open(f"log/raw_data/{self.algorithm_name}.txt", "a+") as file:
+            file.write(f"{aggregated_results[0]};{aggregated_results[1]};{aggregated_results[2]}\n")
