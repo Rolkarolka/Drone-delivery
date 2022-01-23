@@ -23,6 +23,6 @@ if __name__ == '__main__':
     )
     seed(2137)
     np.random.seed(2137)
-    algorythm = GeneticAlgorythm('resources/busy_day.in', population_size=10, max_generations=50, mutation_type=MutationType.GAUSSIAN_MUTATION, cross_over_type=CrossOverType.LINEAR_CROSSOVER)
+    algorythm = GeneticAlgorythm('resources/busy_day.in', population_size=10, max_generations=50)
     algorythm.start()
 
