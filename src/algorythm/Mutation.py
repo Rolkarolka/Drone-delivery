@@ -28,10 +28,10 @@ class Mutation:
         return self.mutation(lambda: np.random.uniform(0, 1), population)
 
     def gaussian_mutation(self, population):
-        return self.mutation(lambda: np.absolute(np.random.normal(0, 1)), population)
+        return self.mutation(lambda: np.random.normal(0, 1).item(), population)
 
     def cauchy_mutation(self, population):
-        return self.mutation(lambda: np.random.standard_cauchy(1), population)
+        return self.mutation(lambda: np.random.standard_cauchy(1).item(), population)
 
     def no_mutation(self, population):
         return population

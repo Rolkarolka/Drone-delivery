@@ -29,10 +29,11 @@ class CrossOver:
 
     def linear_crossover(self, population):
         new_population = deepcopy(population)
+        parent = lambda x: new_population[np.random.randint(len(new_population))].weights[x]
         for simulation in new_population:
             weight_key = np.random.choice(list(simulation.weights.keys()))
-            parents = [new_population[np.random.randint(len(new_population))].weights[weight_key], new_population[np.random.randint(len(new_population))].weights[weight_key]]
-            weight_val_proposal = [params[0]*parents[0]+params[1]*parents[1] for params in self.linear_parameters]
+            parents = [parent(weight_key), parent(weight_key)]
+            weight_val_proposal = [(params[0]*parents[0]+params[1]*parents[1]) for params in self.linear_parameters]
             simulation.weights[weight_key] = np.random.choice(weight_val_proposal)
         return new_population
 
