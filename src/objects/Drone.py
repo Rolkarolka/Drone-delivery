@@ -1,7 +1,7 @@
 import math
 from enum import Enum
-from src.objects import Order, Warehouse, ItemList
-from src.utilities import Utilities
+from objects import Order, Warehouse, ItemList
+from utilities import Utilities
 import logging
 
 

@@ -1,4 +1,4 @@
-from src.objects import *
+from objects import *
 
 
 class SimulationParameters:

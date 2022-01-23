@@ -1,4 +1,4 @@
-from src.algorythm import Mutation, GeneticAlgorythm, MutationType
+from algorythm import Mutation, GeneticAlgorythm, MutationType
 
 from random import seed
 import numpy as np

@@ -1,9 +1,9 @@
 import time
 
-from src.simulation import SimulationParameters, Simulation, SimulationWeights
-from src.algorythm import Selection, SelectionType, MutationType, Mutation, Succession, SuccessionType, CrossOverType, \
+from simulation import SimulationParameters, Simulation, SimulationWeights
+from algorythm import Selection, SelectionType, MutationType, Mutation, Succession, SuccessionType, CrossOverType, \
     CrossOver
-from src.utilities import Utilities
+from utilities import Utilities
 import threading
 import numpy as np
 import logging

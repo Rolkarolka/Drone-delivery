@@ -1,4 +1,4 @@
-from src.objects import ItemList
+from objects import ItemList
 
 
 class Order:

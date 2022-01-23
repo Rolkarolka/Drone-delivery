@@ -1,7 +1,5 @@
 import numpy as np
-
-from algorythm import SuccessionType, SelectionType, MutationType, CrossOverType
-from src.algorythm import GeneticAlgorythm
+from algorythm import *
 from random import seed
 import logging
 from subprocess import check_output
