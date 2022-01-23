@@ -1,8 +1,5 @@
-import time
-
 from simulation import SimulationParameters, Simulation, SimulationWeights
-from algorythm import Selection, SelectionType, MutationType, Mutation, Succession, SuccessionType, CrossOverType, \
-    CrossOver
+from algorythm import Selection, Mutation, Succession, CrossOver
 from utilities import Utilities
 import threading
 import numpy as np
@@ -10,22 +7,19 @@ import logging
 
 
 class GeneticAlgorythm:
-    def __init__(self, filename, population_size, max_generations,
-                 selection_type=SelectionType.TOURNAMENT_SELECTION,
-                 mutation_type=MutationType.GAUSSIAN_MUTATION,
-                 succession_type=SuccessionType.ELITE_SUCCESSION,
-                 cross_over_type=CrossOverType.NONE):
+    def __init__(self, filename, population_size, max_generations, selection_type,
+                 mutation_type, succession_type, crossover_type):
         self.sim_consts = SimulationParameters.from_file(filename)
         self.max_generations = max_generations
         self.population_size = population_size
         self.selection_type = selection_type
         self.mutation_type = mutation_type
         self.succession_type = succession_type
-        self.cross_over_type = cross_over_type
+        self.cross_over_type = crossover_type
         self.mutation = Mutation().return_mutation_type(mutation_type)
         self.selection = Selection().return_selection_type(selection_type)
         self.succession = Succession().return_succession_type(succession_type)
-        self.cross_over = CrossOver().return_cross_over_type(cross_over_type)
+        self.cross_over = CrossOver().return_cross_over_type(crossover_type)
         self.score_history = []
         self.algorithm_name = f"alg_" \
                               f"{self.population_size}_" \
