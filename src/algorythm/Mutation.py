@@ -16,10 +16,7 @@ class Mutation:
         m_population = deepcopy(population)
         for simulation in m_population:
             amount_of_muted_weights = np.random.randint(0, len(simulation.weights))
-            # choose which and how many of weights will be muted
-            weights_to_be_muted = np.random.choice(list(simulation.weights.keys()), size=amount_of_muted_weights,
-                                                   replace=False)
-            # mute chosen
+            weights_to_be_muted = np.random.choice(list(simulation.weights.keys()), size=amount_of_muted_weights, replace=False)
             for weight in weights_to_be_muted:
                 simulation.weights[weight] = mutation_type()
         return m_population
